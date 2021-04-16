@@ -9,3 +9,6 @@ simple snake game for school, only russian translation
 
 скриншот игры<br>
 ![image](https://user-images.githubusercontent.com/49288795/115059864-34368b80-9ef8-11eb-885c-0f1f1730ea95.png)
+<br>
+![image](https://user-images.githubusercontent.com/49288795/115060032-6942de00-9ef8-11eb-9912-2a76468ee3ce.png)
+
