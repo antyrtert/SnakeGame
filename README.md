@@ -13,6 +13,9 @@ Only Russian language.
 Недостатки:
 1. Темы работают не полностью, причину не нашёл
 2. Боты - просто алгоритм поиска кратчайшего пути с препядствиями.
+3. Некоторые антивирусы распознают угрозу, причину не выявил.
+
+[VirusTotal](https://www.virustotal.com/gui/file/c68b355ada5db463e5ceb000eec49ddddfccaf1cd9771b0465385ef09409374e/detection)
 
 ![image](https://user-images.githubusercontent.com/49288795/116287331-54403780-a7a1-11eb-9d7f-1e270c55d1b9.png)
 ![image](https://user-images.githubusercontent.com/49288795/116287351-586c5500-a7a1-11eb-878f-8ff61c8381a3.png)
