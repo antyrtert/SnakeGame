@@ -1,0 +1,294 @@
+﻿<Window
+    x:Class="SnakeGame.Windows.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:SnakeGame"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="window"
+    Title="Змейка"
+    Width="800"
+    Height="450"
+    MinWidth="400"
+    MinHeight="300"
+    PreviewKeyDown="Window_PreviewKeyDown"
+    Style="{StaticResource WindowStyle}"
+    mc:Ignorable="d">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid
+            Grid.Column="1"
+            Margin="5,7,5,5"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Background="#1fff">
+            <Rectangle
+                Width="5"
+                Margin="-5,0"
+                HorizontalAlignment="Left">
+                <Rectangle.Fill>
+                    <LinearGradientBrush EndPoint="1,0">
+                        <GradientStop Offset="0" Color="#0000" />
+                        <GradientStop Offset="1" Color="#1000" />
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle
+                Width="5"
+                Margin="-5,0"
+                HorizontalAlignment="Right">
+                <Rectangle.Fill>
+                    <LinearGradientBrush EndPoint="1,0">
+                        <GradientStop Offset="0" Color="#1000" />
+                        <GradientStop Offset="1" Color="#0000" />
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle
+                Height="5"
+                Margin="0,-5"
+                VerticalAlignment="Top">
+                <Rectangle.Fill>
+                    <LinearGradientBrush EndPoint="0,1">
+                        <GradientStop Offset="0" Color="#0000" />
+                        <GradientStop Offset="1" Color="#1000" />
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle
+                Height="5"
+                Margin="0,-5"
+                VerticalAlignment="Bottom">
+                <Rectangle.Fill>
+                    <LinearGradientBrush EndPoint="0,1">
+                        <GradientStop Offset="0" Color="#1000" />
+                        <GradientStop Offset="1" Color="#0000" />
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle
+                Width="5"
+                Height="5"
+                Margin="-5"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top">
+                <Rectangle.Fill>
+                    <RadialGradientBrush Center="1,1" GradientOrigin="1,1" RadiusX="1" RadiusY="1">
+                        <GradientStop Offset="0" Color="#1000" />
+                        <GradientStop Offset="1" Color="#0000" />
+                    </RadialGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle
+                Width="5"
+                Height="5"
+                Margin="-5"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom">
+                <Rectangle.Fill>
+                    <RadialGradientBrush Center="1,0" GradientOrigin="1,0" RadiusX="1" RadiusY="1">
+                        <GradientStop Offset="0" Color="#1000" />
+                        <GradientStop Offset="1" Color="#0000" />
+                    </RadialGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle
+                Width="5"
+                Height="5"
+                Margin="-5"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top">
+                <Rectangle.Fill>
+                    <RadialGradientBrush Center="0,1" GradientOrigin="0,1" RadiusX="1" RadiusY="1">
+                        <GradientStop Offset="0" Color="#1000" />
+                        <GradientStop Offset="1" Color="#0000" />
+                    </RadialGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle
+                Width="5"
+                Height="5"
+                Margin="-5"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom">
+                <Rectangle.Fill>
+                    <RadialGradientBrush Center="0,0" GradientOrigin="0,0" RadiusX="1" RadiusY="1">
+                        <GradientStop Offset="0" Color="#1000" />
+                        <GradientStop Offset="1" Color="#0000" />
+                    </RadialGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Viewbox>
+                <Grid Width="{Binding ElementName=MainFrame, Path=Width}" Height="{Binding ElementName=MainFrame, Path=Height}">
+                    <Grid.Background>
+                        <VisualBrush
+                            Stretch="UniformToFill"
+                            TileMode="Tile"
+                            ViewboxUnits="RelativeToBoundingBox"
+                            ViewportUnits="Absolute">
+                            <VisualBrush.Transform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX="2" ScaleY="2" />
+                                </TransformGroup>
+                            </VisualBrush.Transform>
+                            <VisualBrush.Visual>
+                                <Image
+                                    Opacity="0.03"
+                                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                    Source="/Images/checker.bmp"
+                                    Stretch="None" />
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </Grid.Background>
+                </Grid>
+            </Viewbox>
+            <Viewbox>
+                <Viewbox>
+                    <Viewbox.Effect>
+                        <DropShadowEffect
+                            BlurRadius="0"
+                            Direction="270"
+                            ShadowDepth="0.02" />
+                    </Viewbox.Effect>
+                    <Grid
+                        x:Name="MainFrame"
+                        Width="11"
+                        Height="11"
+                        ClipToBounds="True" />
+                </Viewbox>
+            </Viewbox>
+        </Grid>
+        <Rectangle Fill="{DynamicResource AltLowBrush}" Opacity="0.5" />
+        <Label
+            Margin="3,5"
+            VerticalAlignment="Bottom"
+            HorizontalContentAlignment="Left"
+            Background="Transparent"
+            Content="Автор: &#10;Воронин Даниил"
+            Opacity="0.5" />
+        <StackPanel
+            Grid.Column="0"
+            Margin="3,5"
+            Orientation="Vertical"
+            SnapsToDevicePixels="True">
+            <Button
+                Click="Button_Click"
+                GotFocus="Button_GotFocus"
+                IsEnabled="True">
+                <Button.Content>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Padding="4,0" Text="Настройки" />
+                        <Viewbox Grid.Column="1" Height="14">
+                            <Path Data="M 5.6855469 0.01171875 C 5.3897535 0.042347063 5.0915221 0.13609678 4.7929688 0.25976562 C 4.1958619 0.50710294 3.6832346 0.83207593 3.4648438 1.4335938 C 3.2464531 2.0351116 3.4627515 2.5140414 3.5527344 2.7558594 C 3.6427174 2.9976774 3.6574587 3.086965 3.65625 3.109375 C 3.6550412 3.1317839 3.685324 3.1857619 3.4355469 3.4355469 C 3.1857697 3.6853314 3.1317843 3.6550409 3.109375 3.65625 C 3.0869668 3.6574588 2.9976699 3.6427206 2.7558594 3.5527344 C 2.5140488 3.4627486 2.0350929 3.2464463 1.4335938 3.4648438 C 0.83209459 3.6832412 0.50709539 4.1958433 0.25976562 4.7929688 C 0.012436014 5.390094 -0.12050777 5.9846853 0.15039062 6.5644531 C 0.42128906 7.144221 0.91187107 7.328185 1.1464844 7.4355469 C 1.3810977 7.5429084 1.4557121 7.5965795 1.4707031 7.6132812 C 1.4856942 7.6299868 1.5371094 7.6428493 1.5371094 7.9960938 C 1.5371093 8.3493442 1.4856941 8.3719712 1.4707031 8.3886719 C 1.4557121 8.4053774 1.3810977 8.4570916 1.1464844 8.5644531 C 0.91187107 8.6718146 0.42128917 8.8557787 0.15039062 9.4355469 C -0.12050781 10.015315 0.012435636 10.609906 0.25976562 11.207031 C 0.50709524 11.804157 0.83209463 12.318712 1.4335938 12.537109 C 2.0350928 12.755506 2.514049 12.53725 2.7558594 12.447266 C 2.9976699 12.357279 3.0869657 12.342541 3.109375 12.34375 C 3.1317832 12.344959 3.1857697 12.316602 3.4355469 12.566406 C 3.6853237 12.816192 3.655041 12.868216 3.65625 12.890625 C 3.6574588 12.913038 3.6427178 13.004275 3.5527344 13.246094 C 3.4627514 13.487912 3.2464531 13.964888 3.4648438 14.566406 C 3.6832344 15.167924 4.1958619 15.492897 4.7929688 15.740234 C 5.3900755 15.987571 5.9847033 16.122469 6.5644531 15.851562 C 7.1442029 15.580657 7.3281884 15.088136 7.4355469 14.853516 C 7.542905 14.618893 7.59658 14.544287 7.6132812 14.529297 C 7.6299863 14.514292 7.6428603 14.462891 7.9960938 14.462891 C 8.3493332 14.462891 8.3700186 14.514307 8.3867188 14.529297 C 8.4034238 14.544302 8.457095 14.618897 8.5644531 14.853516 C 8.6718113 15.088138 8.8557967 15.580656 9.4355469 15.851562 C 10.015297 16.122468 10.609924 15.987571 11.207031 15.740234 C 11.804138 15.492897 12.318719 15.167924 12.537109 14.566406 C 12.7555 13.964888 12.537249 13.487912 12.447266 13.246094 C 12.357283 13.004276 12.342541 12.913035 12.34375 12.890625 C 12.344959 12.868212 12.316609 12.816188 12.566406 12.566406 C 12.816184 12.316621 12.868217 12.344959 12.890625 12.34375 C 12.913037 12.342541 13.00233 12.357298 13.244141 12.447266 C 13.485952 12.537253 13.964907 12.75551 14.566406 12.537109 C 15.167906 12.318712 15.492904 11.804157 15.740234 11.207031 C 15.987564 10.609906 16.120508 10.015315 15.849609 9.4355469 C 15.578711 8.855779 15.088129 8.6718146 14.853516 8.5644531 C 14.618901 8.4570916 14.544286 8.4053736 14.529297 8.3886719 C 14.514293 8.3719663 14.462891 8.3493431 14.462891 7.9960938 C 14.462891 7.6428433 14.514308 7.6299807 14.529297 7.6132812 C 14.544301 7.5965757 14.618905 7.5429084 14.853516 7.4355469 C 15.088129 7.328185 15.578711 7.144221 15.849609 6.5644531 C 16.120508 5.9846853 15.987564 5.3900941 15.740234 4.7929688 C 15.492904 4.1958433 15.167905 3.6832414 14.566406 3.4648438 C 13.964907 3.2464461 13.485951 3.4627487 13.244141 3.5527344 C 13.00233 3.6427202 12.913033 3.6574587 12.890625 3.65625 C 12.868213 3.6550412 12.81618 3.6853318 12.566406 3.4355469 C 12.316628 3.1857619 12.344959 3.131785 12.34375 3.109375 C 12.342541 3.0869661 12.3573 2.9976774 12.447266 2.7558594 C 12.53725 2.5140413 12.755503 2.0351116 12.537109 1.4335938 C 12.31872 0.83207589 11.804138 0.50710309 11.207031 0.25976562 C 10.609924 0.012428309 10.015297 -0.12051621 9.4355469 0.15039062 C 8.8557971 0.4212975 8.6718113 0.91186376 8.5644531 1.1464844 C 8.457095 1.381105 8.40342 1.4557116 8.3867188 1.4707031 C 8.3700137 1.4856947 8.3493321 1.5371094 7.9960938 1.5371094 C 7.6428543 1.5371093 7.6299802 1.4856946 7.6132812 1.4707031 C 7.5965804 1.4557118 7.542905 1.381105 7.4355469 1.1464844 C 7.3281884 0.91186376 7.1442029 0.42129761 6.5644531 0.15039062 C 6.2745782 0.014937188 5.9813403 -0.018909563 5.6855469 0.01171875 z M 7.9960938 2.6601562 C 9.3598036 2.6595914 10.810715 3.2607076 11.775391 4.2246094 C 12.738162 5.1866083 13.33928 6.635076 13.339844 7.9960938 C 13.340409 9.3598343 12.739689 10.813021 11.775391 11.777344 C 10.811113 12.741645 9.3598043 13.340408 7.9960938 13.339844 C 6.6351036 13.339281 5.1865669 12.740117 4.2246094 11.777344 C 3.2607083 10.812625 2.6595924 9.3598339 2.6601562 7.9960938 C 2.6607189 6.6350745 3.2622348 5.1870068 4.2246094 4.2246094 C 5.1869645 3.2622315 6.6351021 2.66072 7.9960938 2.6601562 z M 8.0019531 4.0019531 C 5.8044995 4.0019527 4.0019527 5.8044995 4.0019531 8.0019531 C 4.0019531 10.199406 5.8044999 12.003907 8.0019531 12.003906 C 10.199406 12.003906 12.003906 10.199406 12.003906 8.0019531 C 12.003907 5.8044999 10.199406 4.0019531 8.0019531 4.0019531 z M 8.0019531 5.9726562 C 9.1330486 5.9726562 10.025391 6.8708577 10.025391 8.0019531 C 10.02539 9.1330486 9.1330486 10.02539 8.0019531 10.025391 C 6.8708577 10.025391 5.9726563 9.1330486 5.9726562 8.0019531 C 5.9726562 6.8708577 6.8708577 5.9726563 8.0019531 5.9726562 z " Fill="White" />
+                        </Viewbox>
+                    </Grid>
+                </Button.Content>
+            </Button>
+            <Rectangle
+                Height="2"
+                Margin="0"
+                Opacity="1"
+                Style="{StaticResource ShadeBox}" />
+            <Button
+                Padding="5"
+                Click="Button_Click_2"
+                GotFocus="Button_GotFocus">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Padding="6,0" Text="Таблица лидеров" />
+                    <Viewbox Height="16">
+                        <Path Data="M 2.1035156 0.095703125 A 0.18227722 0.18227722 0 0 0 1.953125 0.1953125 L 1.3984375 1.3222656 L 0.15625 1.5019531 A 0.18227722 0.18227722 0 0 0 0.0546875 1.8125 L 0.953125 2.6894531 L 0.7421875 3.9257812 A 0.18227722 0.18227722 0 0 0 1.0058594 4.1171875 L 2.1171875 3.5332031 L 3.2265625 4.1171875 A 0.18227722 0.18227722 0 0 0 3.4921875 3.9257812 L 3.2792969 2.6894531 L 4.1777344 1.8125 A 0.18227722 0.18227722 0 0 0 4.078125 1.5019531 L 2.8359375 1.3222656 L 2.2792969 0.1953125 A 0.18227722 0.18227722 0 0 0 2.1035156 0.095703125 z M 2.1171875 0.6875 L 2.5507812 1.5683594 A 0.18227722 0.18227722 0 0 0 2.6875 1.6679688 L 3.6601562 1.8105469 L 2.9570312 2.4941406 A 0.18227722 0.18227722 0 0 0 2.9042969 2.65625 L 3.0703125 3.6230469 L 2.2011719 3.1660156 A 0.18227722 0.18227722 0 0 0 2.03125 3.1660156 L 1.1640625 3.6230469 L 1.328125 2.65625 A 0.18227722 0.18227722 0 0 0 1.2773438 2.4941406 L 0.57421875 1.8105469 L 1.5449219 1.6679688 A 0.18227722 0.18227722 0 0 0 1.6816406 1.5683594 L 2.1171875 0.6875 z " Fill="White" />
+                    </Viewbox>
+                </StackPanel>
+            </Button>
+
+            <Rectangle Opacity="1" Style="{StaticResource ShadeBox}" />
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <Rectangle Grid.ColumnSpan="3" Fill="{StaticResource AltLowBrush}" />
+                <Rectangle
+                    Grid.ColumnSpan="3"
+                    Margin="0,-5"
+                    VerticalAlignment="Bottom"
+                    Style="{StaticResource ShadeBox}" />
+                <Label
+                    Grid.Column="0"
+                    Padding="5,3"
+                    Content="Имя" />
+                <StackPanel
+                    x:Name="NameLabelSP"
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Orientation="Vertical">
+                    <Label Padding="5,3" Content="Без имени" />
+                </StackPanel>
+                <Label Grid.Column="1" Padding="5,3">
+                    <Viewbox Height="18">
+                        <Path Data="M 3.7441406 0.29296875 C 3.6412044 0.27903741 3.5393671 0.28703419 3.4453125 0.3125 C 3.1631492 0.38890202 2.9441382 0.62673725 2.9023438 0.93554688 L 2.8085938 1.6152344 C 2.752868 2.0269804 3.0394256 2.4052116 3.4511719 2.4609375 C 3.4511719 2.4609375 5.1961648 2.4435157 5.9609375 2.8007812 C 6.4229428 3.0166085 7.0898437 3.8320313 7.0898438 3.8320312 C 7.3415867 4.162585 7.8100721 4.2243974 8.140625 3.9726562 L 8.6875 3.5566406 C 9.0180537 3.3048973 9.0818196 2.8364122 8.8300781 2.5058594 C 8.8300781 2.5058594 8.0550439 1.687405 7.6054688 1.3515625 C 7.2353321 1.0750642 6.84516 0.80436192 6.4082031 0.65429688 C 5.5607571 0.36325621 3.7441406 0.29296875 3.7441406 0.29296875 z M 3.7617188 3.6992188 C 3.3755376 3.6818268 2.9747839 3.7384549 2.5683594 3.9121094 C 1.872191 4.2095642 1.2049561 4.6360854 0.73046875 5.3144531 C 0.25598134 5.9928209 -2.9605947e-16 6.8902244 0 8.0019531 C 0 10.206891 0.73846413 13.27362 2.3398438 14.875 C 3.1444942 15.67965 4.1591974 15.95019 5.1230469 16.003906 C 6.0868959 16.057623 7.0499808 15.9375 8.0019531 15.9375 C 8.9539254 15.9375 9.9170107 16.057623 10.880859 16.003906 C 11.844709 15.95019 12.8516 15.67965 13.65625 14.875 C 15.25763 13.27362 15.996094 10.206891 15.996094 8.0019531 C 15.996094 6.8902244 15.740113 5.9928209 15.265625 5.3144531 C 14.791137 4.6360854 14.131715 4.2095642 13.435547 3.9121094 C 12.351748 3.4490307 11.309182 3.8237155 10.445312 4.1933594 C 9.5814438 4.5630032 8.8001187 4.9394531 8.0019531 4.9394531 C 7.2037876 4.9394531 6.4146505 4.5630032 5.5507812 4.1933594 C 5.0108631 3.962332 4.405354 3.7282053 3.7617188 3.6992188 z M 12.470703 5.1113281 C 12.607617 5.1218319 12.740295 5.1542163 12.873047 5.2109375 C 13.417379 5.4435164 13.824355 5.7300686 14.107422 6.1347656 C 14.390489 6.5394623 14.580078 7.1004462 14.580078 8.0019531 C 14.580078 9.8234874 13.689632 12.833805 12.652344 13.871094 C 12.13766 14.385777 11.579443 14.542433 10.798828 14.585938 C 10.018213 14.629441 9.0632169 14.519531 8.0019531 14.519531 C 6.9406894 14.519531 5.9856931 14.629441 5.2050781 14.585938 C 4.4244632 14.542433 3.8584335 14.385777 3.34375 13.871094 C 2.3064615 12.833805 1.4179687 9.8234874 1.4179688 8.0019531 C 1.4179688 7.1004458 1.6075579 6.5394627 1.890625 6.1347656 C 2.1736921 5.7300686 2.5787152 5.4435164 3.1230469 5.2109375 C 3.2557983 5.1542163 3.3877441 5.1238946 3.5253906 5.1132812 C 3.9383303 5.0814412 4.3930014 5.2411053 4.9980469 5.5 C 5.8047742 5.8451933 6.7868826 6.3554687 8.0019531 6.3554688 C 9.2170232 6.3554688 10.199132 5.8451929 11.005859 5.5 C 11.610905 5.2411053 12.059961 5.0798167 12.470703 5.1113281 z M 3.5898438 5.8671875 C 3.239936 5.9154822 2.9373012 6.1675336 2.8398438 6.53125 L 2.2890625 8.5839844 C 2.1591192 9.0689395 2.4447324 9.563416 2.9296875 9.6933594 L 3.0820312 9.734375 C 3.5669864 9.8643183 4.061463 9.5787051 4.1914062 9.09375 L 4.7421875 7.0410156 C 4.8721308 6.5560605 4.5865176 6.061584 4.1015625 5.9316406 L 3.9492188 5.890625 C 3.82798 5.8581392 3.7064796 5.8510893 3.5898438 5.8671875 z" Fill="White" />
+                    </Viewbox>
+                </Label>
+                <StackPanel
+                    x:Name="ScoreLabelSP"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Orientation="Vertical">
+                    <Label Padding="5,3" Content="0" />
+                </StackPanel>
+                <Label Grid.Column="2" Padding="5,3">
+                    <Viewbox Height="18">
+                        <Path Data="M 8.0019531 0 C 3.5920446 0 4.7369516e-15 3.5920444 0 8.0019531 C 6.1252007e-16 12.411862 3.5920446 15.996094 8.0019531 15.996094 C 12.411862 15.996094 15.996094 12.411862 15.996094 8.0019531 C 15.996094 3.5920444 12.411862 1.1842379e-15 8.0019531 0 z M 8.0019531 1.4101562 C 11.648161 1.4101562 14.585938 4.355745 14.585938 8.0019531 C 14.585938 11.648161 11.648161 14.585938 8.0019531 14.585938 C 4.3557453 14.585938 1.4101563 11.648161 1.4101562 8.0019531 C 1.4101562 4.355745 4.3557453 1.4101563 8.0019531 1.4101562 z M 7.9980469 2.9550781 C 7.6054688 2.9550781 7.2128906 3.0859375 7.2128906 3.3476562 L 7.2128906 8.1640625 C 7.2128906 8.505829 7.4520567 8.9209338 7.7480469 9.0917969 L 12.572266 11.876953 C 13.025455 12.138561 13.810606 10.779194 13.357422 10.517578 L 9.1757812 8.1035156 C 8.9591421 7.9784533 8.7832031 7.6739743 8.7832031 7.4238281 L 8.7832031 3.3476562 C 8.7832031 3.0859375 8.390625 2.9550781 7.9980469 2.9550781 z " Fill="White" />
+                    </Viewbox>
+                </Label>
+                <StackPanel
+                    x:Name="TimeLabelSP"
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Orientation="Vertical">
+                    <Label Padding="5,3" Content="00:00" />
+                </StackPanel>
+            </Grid>
+            <Rectangle Style="{StaticResource ShadeBox}" />
+
+            <ComboBox x:Name="PlayModeCB" SelectedIndex="0">
+                <ComboBoxItem Content="Одиночная игра" />
+                <ComboBoxItem Content="игра против бота" />
+                <ComboBoxItem Content="бот против бота" />
+                <ComboBoxItem Content="Многопользовательская игра" IsEnabled="False" />
+            </ComboBox>
+            <Rectangle
+                Height="2"
+                Margin="0"
+                Opacity="1"
+                Style="{StaticResource ShadeBox}" />
+            <Button
+                Padding="5"
+                Click="Button_Click_1"
+                GotFocus="Button_GotFocus">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Padding="6,0" Text="Начать" />
+                        <Viewbox Height="14">
+                            <Path Data="M 0.79289287,1.0582388e-4 A 0.31984427,0.31984427 0 0 0 0.48130558,0.320462 c 5.8404e-4,0.9235147 5.8342e-4,2.6681754 0,3.5917307 A 0.32038745,0.32038745 0 0 0 0.97879302,4.1799354 C 1.6662189,3.7223597 2.8875092,2.9075811 3.5743794,2.4489599 a 0.39969024,0.39969024 0 0 0 0,-0.6646806 L 0.97879302,0.05388825 A 0.31984427,0.31984427 0 0 0 0.79289287,1.0582388e-4 Z M 1.0314063,0.66069432 a 0.07985749,0.07985749 0 0 1 0.053198,0.0134456 L 3.1236599,2.0333152 a 0.10001581,0.10001581 0 0 1 0,0.1666088 C 2.7204426,2.4695512 1.4884113,3.2912958 1.084604,3.5596841 A 0.0800688,0.0800688 0 0 1 0.96008612,3.4924557 c 6.376e-4,-0.5256003 6.381e-4,-2.2267195 0,-2.75225694 a 0.07985749,0.07985749 0 0 1 0.0713202,-0.0795044 z" Fill="White" />
+                        </Viewbox>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Rectangle Opacity="1" Style="{StaticResource ShadeBox}" />
+        </StackPanel>
+    </Grid>
+</Window>

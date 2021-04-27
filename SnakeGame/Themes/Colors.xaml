@@ -1,0 +1,23 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:SnakeGame">
+    <Color x:Key="BaseHigh">#FFFFFF</Color>
+    <Color x:Key="AltHigh">#8222</Color>
+    <Color x:Key="AltMedHigh">#6222</Color>
+    <Color x:Key="AltMed">#4222</Color>
+    <Color x:Key="AltMedLow">#3222</Color>
+    <Color x:Key="AltLow">#2222</Color>
+    <Color x:Key="Accent">#FF26A0DA</Color>
+    <Color x:Key="Apple">#FFFF4500</Color>
+    <Color x:Key="Background">#FF33CC33</Color>
+    <SolidColorBrush x:Key="BaseHighBrush" Color="{DynamicResource BaseHigh}" />
+    <SolidColorBrush x:Key="AltHighBrush" Color="{DynamicResource AltHigh}" />
+    <SolidColorBrush x:Key="AltMedHighBrush" Color="{DynamicResource AltMedHigh}" />
+    <SolidColorBrush x:Key="AltMedBrush" Color="{DynamicResource AltMed}" />
+    <SolidColorBrush x:Key="AltMedLowBrush" Color="{DynamicResource AltMedLow}" />
+    <SolidColorBrush x:Key="AltLowBrush" Color="{DynamicResource AltLow}" />
+    <SolidColorBrush x:Key="AccentBrush" Color="{DynamicResource Accent}" />
+    <SolidColorBrush x:Key="AppleBrush" Color="{DynamicResource Apple}" />
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource Background}" />
+</ResourceDictionary>
