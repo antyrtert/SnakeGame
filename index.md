@@ -1,37 +1,21 @@
-## Welcome to GitHub Pages
+# Snake_Game
+Simple snake game
 
-You can use the [editor on GitHub](https://github.com/antyrtert/Snake_Game/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+Only Russian language.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Простая игра "Змея" ("Питон", "Удав" и т.д.) с классическими правилами и внешним видом основанным на Google Snake
 
-### Markdown
+Особенности:
+1. Поддерживает темы и их изменение через файл "Data\Themes.xml" в директории игры.
+2. Имеется рабочая таблица рекордов, работает через файл "Data\Scores.xml" в директории игры.
+3. Есть соперник - бот, и несколько ботов без игрока (как скрин-сейвер).
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Недостатки:
+1. Темы работают не полностью, причину не нашёл
+2. Боты - просто алгоритм поиска кратчайшего пути с препядствиями.
+3. Некоторые антивирусы распознают угрозу, причину не выявил.
 
-```markdown
-Syntax highlighted code block
+[VirusTotal](https://www.virustotal.com/gui/file/c68b355ada5db463e5ceb000eec49ddddfccaf1cd9771b0465385ef09409374e/detection)
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/antyrtert/Snake_Game/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+![image](https://user-images.githubusercontent.com/49288795/116287331-54403780-a7a1-11eb-9d7f-1e270c55d1b9.png)
+![image](https://user-images.githubusercontent.com/49288795/116287351-586c5500-a7a1-11eb-878f-8ff61c8381a3.png)
