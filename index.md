@@ -1,7 +1,6 @@
-# Snake_Game
-Simple snake game
-
 Only Russian language.
+
+Download: [GitHub](https://github.com/antyrtert/Snake_Game/releases)
 
 Простая игра "Змея" ("Питон", "Удав" и т.д.) с классическими правилами и внешним видом основанным на Google Snake
 
