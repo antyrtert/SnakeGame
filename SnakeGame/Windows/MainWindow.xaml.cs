@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -14,212 +15,109 @@ namespace SnakeGame.Windows
 {
     public partial class MainWindow : Window
     {
-        private static readonly Vector size = new Vector(11, 11);
-        DateTime start;
+        DateTime StartTime;
         readonly System.Timers.Timer updatetimer = new System.Timers.Timer(refreshTime);
         bool MultiPlayer => Field.Snakes.Count > 1;
-        int id = 0;
+        public int id = 0;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            MainFrame.Width = size.X;
-            MainFrame.Height = size.Y;
-
-            Field = GetField();
+            Field = Clone<SnakeLogic.Field>(FieldPreset);
             Field.Snakes[0].alive = false;
-
             MainFrame.Children.Add(Field.Draw());
+
+            RedrawField += () =>
+            {
+                MainFrame.Children.Insert(0, FieldPreset.Draw());
+                MainFrame.Children.RemoveAt(1);
+            };
 
             Closed += (_, __) => updatetimer.Stop();
 
             updatetimer.Elapsed += (_, __) => Dispatcher.BeginInvoke((Action)(() => Update()), null);
         }
 
-        SnakeLogic.Field GetField()
-        {
-            switch (0)
-            {
-                case 0:
-                    id = 0;
-                    return new SnakeLogic.Field(size.X, size.Y)
-                    {
-                        Snakes = new List<SnakeLogic.Snake>()
-                        {
-                            new SnakeLogic.Snake()
-                            {
-                                Name = username, id = 0, bot = false,
-                                Color = HsvToRgb(195, 1, 1, 1).Color,
-                                TailPoints = new List<Point>()
-                                {
-                                    new Point(3, 5),
-                                    new Point(2, 5),
-                                    new Point(1, 5)
-                                },
-                                HeadPos = new Point(4, 5)
-                            }
-                        },
-                        Apples = new List<Point>()
-                        {
-                            new Point(7, 5)
-                        }
-                    };
-                case 1:
-                    id = 0;
-                    return new SnakeLogic.Field(size.X, size.Y)
-                    {
-                        Snakes = new List<SnakeLogic.Snake>()
-                        {
-                            new SnakeLogic.Snake()
-                            {
-                                Name = username, id = 0, bot = false,
-                                Color = Colors.LightSkyBlue,
-                                TailPoints = new List<Point>()
-                                {
-                                    new Point(3, 4),
-                                    new Point(2, 4),
-                                    new Point(1, 4)
-                                },
-                                HeadPos = new Point(4, 4)
-                            },
-                            new SnakeLogic.Snake()
-                            {
-                                Name = username, id = 1, bot = true,
-                                TailPoints = new List<Point>()
-                                {
-                                    new Point(3, 6),
-                                    new Point(2, 6),
-                                    new Point(1, 6)
-                                },
-                                HeadPos = new Point(4, 6)
-                            }
-                        },
-                        Apples = new List<Point>()
-                        {
-                            new Point(7, 4),
-                            new Point(7, 6)
-                        }
-                    };
-                case 2:
-                    id = 0;
-                    return new SnakeLogic.Field(size.X, size.Y)
-                    {
-                        Snakes = new List<SnakeLogic.Snake>()
-                        {
-                            new SnakeLogic.Snake()
-                            {
-                                Name = username, id = 0, bot = true,
-                                Color = Colors.LightSkyBlue,
-                                TailPoints = new List<Point>()
-                                {
-                                    new Point(3, 3),
-                                    new Point(2, 3),
-                                    new Point(1, 3)
-                                },
-                                HeadPos = new Point(4, 3)
-                            },
-                            new SnakeLogic.Snake()
-                            {
-                                Name = username, id = 1, bot = true,
-                                TailPoints = new List<Point>()
-                                {
-                                    new Point(3, 5),
-                                    new Point(2, 5),
-                                    new Point(1, 5)
-                                },
-                                HeadPos = new Point(4, 5)
-                            },
-                            new SnakeLogic.Snake()
-                            {
-                                Name = username, id = 2, bot = true,
-                                TailPoints = new List<Point>()
-                                {
-                                    new Point(3, 7),
-                                    new Point(2, 7),
-                                    new Point(1, 7)
-                                },
-                                HeadPos = new Point(4, 7)
-                            }
-                        },
-                        Apples = new List<Point>()
-                        {
-                            new Point(7, 3),
-                            new Point(7, 5),
-                            new Point(7, 7)
-                        }
-                    };
-            }
-            return new SnakeLogic.Field(size.X, size.Y);
-        }
-
         public void Start()
         {
-            Field = GetField();
+            Field = Clone<SnakeLogic.Field>(FieldPreset);
             Field.GenFood();
 
-            refreshTime = 1000d / defaultRefreshTime;
+            MainFrame.Width = Field.Width;
+            MainFrame.Height = Field.Height;
+
+            refreshTime = 1000d / Field.speed;
+            updatetimer.Interval = refreshTime;
             updatetimer.Start();
-            start = DateTime.Now;
+            StartTime = DateTime.Now;
         }
 
         private void Update()
         {
+            Field.Update();
+
+            string time = (DateTime.Now - StartTime).TotalMinutes.ToString("00") +
+                    ':' + (DateTime.Now - StartTime).Seconds.ToString("00");
+
+            NameLabelSP.Children.Clear();
+            TimeLabelSP.Children.Clear();
+            ScoreLabelSP.Children.Clear();
+
+            foreach (SnakeLogic.Snake snake in Field.Snakes)
+            {
+                SolidColorBrush background = snake.Brush;
+                SolidColorBrush foreground = ((Global.Color)background.Color).L > 0.5 ?
+                    Brushes.Black : Brushes.White;
+
+                NameLabelSP.Children.Add(new Label()
+                {
+                    Padding = new Thickness(5, 3, 5, 3),
+                    Content = snake.Name ?? "Без имени",
+                    Opacity = snake.alive ? 1 : 0.25,
+                    Foreground = foreground,
+                    Background = background
+                });
+
+                ScoreLabelSP.Children.Add(new Label()
+                {
+                    Padding = new Thickness(5, 3, 5, 3),
+                    Content = snake.score,
+                    Opacity = snake.alive ? 1 : 0.25,
+                    Foreground = foreground,
+                    Background = background
+                });
+
+                TimeLabelSP.Children.Add(new Label()
+                {
+                    Padding = new Thickness(5, 3, 5, 3),
+                    Content = snake.time,
+                    Opacity = snake.alive ? 1 : 0.25,
+                    Foreground = foreground,
+                    Background = background
+                });
+
+                if (snake.alive) snake.time = time;
+            }
+
             if (MultiPlayer || Field.Snakes[id].alive)
             {
-                Field.Update();
-
                 MainFrame.Children.Insert(0, Field.Draw());
                 MainFrame.Children.RemoveAt(1);
-
-                string time = $"{(DateTime.Now - start).TotalMinutes:00}:" +
-                              $"{(DateTime.Now - start).Seconds:00}";
 
                 if (MultiPlayer &&
                     Field.Snakes.All(snake => snake.bot) &&
                     Field.Snakes.All(snake => !snake.alive))
                     Start();
-
-                NameLabelSP.Children.Clear();
-                TimeLabelSP.Children.Clear();
-                ScoreLabelSP.Children.Clear();
-
-                foreach (SnakeLogic.Snake snake in Field.Snakes)
-                {
-                    SolidColorBrush background = HsvToRgb(snake.id * 360 / Field.Snakes.Count + 195, 0.8, 0.8, 0.5);
-
-                    NameLabelSP.Children.Add(new Label()
-                    {
-                        Padding = new Thickness(5, 3, 5, 3),
-                        Content = snake.Name ?? "Без имени",
-                        Opacity = snake.alive ? 1 : 0.75,
-                        Background = background
-                    });
-
-                    ScoreLabelSP.Children.Add(new Label()
-                    {
-                        Padding = new Thickness(5, 3, 5, 3),
-                        Content = snake.score,
-                        Opacity = snake.alive ? 1 : 0.75,
-                        Background = background
-                    });
-
-                    TimeLabelSP.Children.Add(new Label()
-                    {
-                        Padding = new Thickness(5, 3, 5, 3),
-                        Content = snake.time,
-                        Opacity = snake.alive ? 1 : 0.75,
-                        Background = background
-                    });
-
-                    if (snake.alive) snake.time = time;
-                }
             }
             else
             {
                 updatetimer.Stop();
 
-                if (AskName())
+                if (AskName()
+                    && Field.Width == 11 && Field.Height == 11
+                    && Field.Snakes.Count == 1 && Field.Snakes[id].bot == false
+                    && Field.maxApples == 1 && Field.speed == 5)
                     SaveResult(new Item(username,
                         $"{Field.Snakes[id].score}",
                         Field.Snakes[id].time,
@@ -232,7 +130,7 @@ namespace SnakeGame.Windows
                     ShowInTaskbar = false,
                     SizeToContent = SizeToContent.WidthAndHeight,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    Style = Application.Current.Resources["WindowStyle"] as Style,
+                    Style = GetResource<Style>("WindowStyle"),
                     Title = "Игра окончена"
                 };
 
@@ -271,12 +169,12 @@ namespace SnakeGame.Windows
                         },
                         new Rectangle()
                         {
-                            Style = Application.Current.Resources["ShadeBox"] as Style
+                            Style = GetResource<Style>("ShadeBox")
                         },
                         rbtn,
                         new Rectangle()
                         {
-                            Style = Application.Current.Resources["ShadeBox"] as Style,
+                            Style = GetResource<Style>("ShadeBox"),
                             Opacity = 1
                         }
                     }
@@ -286,6 +184,7 @@ namespace SnakeGame.Windows
                 rbtn.Focus();
                 wnd.ShowDialog();
             }
+
         }
 
         private bool AskName()
@@ -299,13 +198,14 @@ namespace SnakeGame.Windows
                     ShowInTaskbar = false,
                     SizeToContent = SizeToContent.WidthAndHeight,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    Style = Application.Current.Resources["WindowStyle"] as Style,
+                    Style = GetResource<Style>("WindowStyle"),
                     Title = "Введите имя"
                 };
 
                 TextBox tb = new TextBox()
                 {
-                    Background = new SolidColorBrush(Color.FromArgb(51, 68, 68, 68)),
+                    MaxLength = 32,
+                    Background = GetResource<Brush>("AltMedBrush"),
                     BorderThickness = new Thickness(0),
                     Foreground = Brushes.White,
                     MinWidth = 100,
@@ -338,19 +238,14 @@ namespace SnakeGame.Windows
                         tb,
                         new Rectangle()
                         {
-                            Height = 4,
-                            Margin = new Thickness(0, 0, 0, 8),
-                            Fill = new LinearGradientBrush(
-                                Color.FromArgb(48, 0, 0, 0),
-                                Color.FromArgb(0, 0, 0, 0), 90)
+                            Style = GetResource<Style>("ShadeBox"),
+                            Opacity = 0.75
                         },
                         rbtn,
                         new Rectangle()
                         {
-                            Height = 4,
-                            Fill = new LinearGradientBrush(
-                                Color.FromArgb(96, 0, 0, 0),
-                                Color.FromArgb(0, 0, 0, 0), 90)
+                            Style = GetResource<Style>("ShadeBox"),
+                            Opacity = 1
                         }
                     }
                 };
@@ -366,16 +261,16 @@ namespace SnakeGame.Windows
 
         private void SaveResult(Item i)
         {
-            List<Item> Items = Save.Deserialize<Item>(Environment.CurrentDirectory + "\\Data\\Scores.xml");
+            List<Item> Items = (List<Item>)Save.DeSerializeBin<Item>(Environment.CurrentDirectory + "\\Data\\Scores.bin");
 
             Items.Add(i);
             Items.Sort();
             Items.Reverse();
 
-            if (Items.Count > 1000)
-                Items.RemoveRange(1000, Items.Count - 1000);
+            if (Items.Count > 100)
+                Items.RemoveRange(100, Items.Count - 100);
 
-            Save.Serialize(Items, Environment.CurrentDirectory + "\\Data\\Scores.xml");
+            Save.SerializeBin(Items, Environment.CurrentDirectory + "\\Data\\Scores.bin");
         }
 
         private void Button_Click(object sender, RoutedEventArgs e) =>
@@ -384,8 +279,6 @@ namespace SnakeGame.Windows
             Start();
         private void Button_Click_2(object sender, RoutedEventArgs e) =>
             new Scores() { Owner = this }.ShowDialog();
-        private void Button_Click_3(object sender, RoutedEventArgs e) =>
-            new GameModeSettings() { Owner = this }.ShowDialog();
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
@@ -410,16 +303,16 @@ namespace SnakeGame.Windows
                     break;
                 case Key.Enter:
                 case Key.Space:
-                    if (!MultiPlayer && Field.Snakes.All(snake => !snake.alive)) Start();
+                    direction = Vector.Right;
                     break;
             }
-
-            if (direction != Vector.Zero && Field.Snakes[id].alive)
-                Field.Snakes[id].HeadDirection = direction;
 
             if (Field.Snakes.All(snake => !snake.alive)
                 && direction != Vector.Zero
                 && !MultiPlayer) Start();
+
+            if (direction != Vector.Zero && Field.Snakes[id].alive)
+                Field.Snakes[id].HeadDirection = direction;
         }
 
         private void Button_GotFocus(object sender, RoutedEventArgs e)

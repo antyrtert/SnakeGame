@@ -1,22 +1,51 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using static SnakeGame.Global;
+using Color = System.Windows.Media.Color;
 
 namespace SnakeGame.Windows
 {
     public partial class Settings : Window
     {
+        public List<SnakeLogic.Snake> Snakes;
         public Settings()
         {
             InitializeComponent();
 
             ThemeBox.SelectedIndex = themeId;
             Debug.IsChecked = DebugOverlay;
+
+            switch (FieldPreset.Width)
+            {
+                case 9:
+                    FieldSizeCB.SelectedIndex = 0;
+                    break;
+                case 11:
+                    FieldSizeCB.SelectedIndex = 1;
+                    break;
+                case 13:
+                    FieldSizeCB.SelectedIndex = 2;
+                    break;
+                case 15:
+                    FieldSizeCB.SelectedIndex = 3;
+                    break;
+                case 17:
+                    FieldSizeCB.SelectedIndex = 4;
+                    break;
+                case 21:
+                    FieldSizeCB.SelectedIndex = 5;
+                    break;
+            }
+            Snakes = Clone<List<SnakeLogic.Snake>>(FieldPreset.Snakes);
+
+            SnakesLV.ItemsSource = Snakes;
         }
 
         public Theme GetTheme(int id)
@@ -28,14 +57,14 @@ namespace SnakeGame.Windows
                     return new Theme()
                     {
                         Apple = Colors.OrangeRed,
-                        Background = Color.FromArgb(255, 51, 204, 51)
+                        Background = Color.FromArgb(0xFF, 0x33, 0xCC, 0x33)
                     };
 
                 case 1:
                     return new Theme()
                     {
-                        Apple = Color.FromArgb(255, 104, 104, 104),
-                        Background = Color.FromArgb(255, 34, 34, 34)
+                        Apple = Color.FromArgb(0xFF, 0x66, 0x66, 0x66),
+                        Background = Color.FromArgb(0xFF, 0x33, 0x33, 0x33)
                     };
 
                 case 2:
@@ -51,8 +80,9 @@ namespace SnakeGame.Windows
 
         public void LoadUserThemes()
         {
-            List<UserTheme> list = Save.Deserialize<UserTheme>
-                (Environment.CurrentDirectory + "\\Data\\Themes.xml");
+            List<UserTheme> list =
+                JsonConvert.DeserializeObject<List<UserTheme>>(
+                    File.ReadAllText(Environment.CurrentDirectory + "\\Data\\Themes.json"));
 
             int uti = userThemeId;
             userThemesList.Items.Clear();
@@ -167,25 +197,89 @@ namespace SnakeGame.Windows
 
             public void Apply()
             {
-                Application.Current.Resources["Apple"] = Apple;
+                Application.Current.Resources["Apple"]      = Apple;
                 Application.Current.Resources["Background"] = Background;
 
-                byte v = (byte)((GetColor(Background).GetBrightness() > 1 / 3f) ? 0x22 : 0x66);
+                byte v = (byte)((((Global.Color)Background).V > 1 / 5f) ? 0x22 : 0x66);
 
-                Application.Current.Resources["BaseHigh"] = Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF);
-                Application.Current.Resources["AltHigh"] = Color.FromArgb(0x88, v, v, v);
+                Application.Current.Resources["BaseHigh"]   = Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF);
+                Application.Current.Resources["AltHigh"]    = Color.FromArgb(0x88, v, v, v);
                 Application.Current.Resources["AltMedHigh"] = Color.FromArgb(0x66, v, v, v);
-                Application.Current.Resources["AltMed"] = Color.FromArgb(0x44, v, v, v);
-                Application.Current.Resources["AltMedLow"] = Color.FromArgb(0x33, v, v, v);
-                Application.Current.Resources["AltLow"] = Color.FromArgb(0x22, v, v, v);
+                Application.Current.Resources["AltMed"]     = Color.FromArgb(0x44, v, v, v);
+                Application.Current.Resources["AltMedLow"]  = Color.FromArgb(0x33, v, v, v);
+                Application.Current.Resources["AltLow"]     = Color.FromArgb(0x22, v, v, v);
             }
 
             public static Color ColorFromHex(string hex) =>
                 (Color)ColorConverter.ConvertFromString(hex);
         }
 
-        public static System.Drawing.Color GetColor(Color color) =>
-            System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
+        private void Apply(object sender, RoutedEventArgs e)
+        {
+            string s = (FieldSizeCB.SelectedItem as ComboBoxItem).Content as string;
+            int w = int.Parse(s.Split('x')[0]), h = int.Parse(s.Split('x')[1]);
+
+            if (Snakes.Count == 0)
+                Snakes.Add(new SnakeLogic.Snake()
+                {
+                    Color = Global.Color.FromInt32(0xFF00BEFF)
+                });
+
+            for (int i = 0; i < Snakes.Count; i++)
+            {
+                int y = h * (i + 1) / Snakes.Count - h / (Snakes.Count + 1);
+                Snakes[i].id = i;
+                Snakes[i].TailPoints = new List<Point>()
+                {
+                    new Point(3, y),
+                    new Point(2, y),
+                    new Point(1, y),
+                    new Point(0, y)
+                };
+                Snakes[i].HeadPos = new Point(4, y);
+            }
+
+            FieldPreset = new SnakeLogic.Field(w, h)
+            {
+                Snakes = SnakesLV.ItemsSource as List<SnakeLogic.Snake>,
+                maxApples = Snakes.Count,
+                Apples = new List<Point>()
+                {
+                    new Point(w / 2, h / 2)
+                }
+            };
+
+            if (Field.Snakes.TrueForAll(snake => !snake.alive))
+                InvokeFieldRedraw();
+        }
+
+        private void AddSnakeBtnClick(object sender, RoutedEventArgs e)
+        {
+            if (Snakes.Count < 5)
+                Snakes.Add(new SnakeLogic.Snake()
+                {
+                    Color = Global.Color.FromHSV(new Random(Snakes.Count * Snakes.Count).NextDouble() * 360, 1, 1, 1),
+                    bot = true
+                });
+
+            SnakesLV.ItemsSource = new List<SnakeLogic.Snake>();
+            SnakesLV.ItemsSource = Snakes;
+        }
+
+        private void RemoveSnakeBtnClick(object sender, RoutedEventArgs e)
+        {
+            if (SnakesLV.SelectedIndex >= 0)
+                Snakes.RemoveAt(SnakesLV.SelectedIndex);
+
+            if (Snakes.Count == 0)
+                Snakes.Add(new SnakeLogic.Snake()
+                {
+                    Color = Global.Color.FromInt32(0xFF00BEFF)
+                });
+
+            SnakesLV.ItemsSource = new List<SnakeLogic.Snake>();
+            SnakesLV.ItemsSource = Snakes;
+        }
 
         private void About(object sender, RoutedEventArgs e)
         {
@@ -195,7 +289,7 @@ namespace SnakeGame.Windows
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 SizeToContent = SizeToContent.WidthAndHeight,
-                Style = Application.Current.Resources["WindowStyle"] as Style,
+                Style = GetResource<Style>("WindowStyle"),
                 ResizeMode = ResizeMode.NoResize,
                 Title = "О игре",
                 Content = new StackPanel()
@@ -215,7 +309,7 @@ namespace SnakeGame.Windows
                         },
                         new Rectangle()
                         {
-                            Style = Application.Current.Resources["ShadeBox"] as Style
+                            Style = GetResource<Style>("ShadeBox")
                         }
                     }
                 },
@@ -237,6 +331,23 @@ namespace SnakeGame.Windows
         {
             userThemeId = (sender as ComboBox).SelectedIndex;
             (((sender as ComboBox)?.SelectedItem as ComboBoxItem)?.Tag as Theme)?.Apply();
+        }
+
+        private void UsernameTB_TextChanged(object sender, TextChangedEventArgs e) =>
+            username = (sender as TextBox).Text;
+
+        private void Rectangle_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            PickColor wnd = new PickColor(((sender as Rectangle).Fill as SolidColorBrush).Color)
+            {
+                Owner = this
+            };
+
+            wnd.ShowDialog();
+            (sender as Rectangle).Fill = new SolidColorBrush(wnd.Color);
+
+            SnakesLV.ItemsSource = new List<SnakeLogic.Snake>();
+            SnakesLV.ItemsSource = Snakes;
         }
     }
 }

@@ -49,7 +49,7 @@ namespace SnakeGame.Windows
             BlockUpDate();
             Timer.Start();
 
-            List<Item> Items = Save.Deserialize<Item>(Environment.CurrentDirectory + "\\Data\\Scores.xml");
+            List<Item> Items = (List<Item>)Save.DeSerializeBin<Item>(Environment.CurrentDirectory + "\\Data\\Scores.bin");
 
             int Place = 1;
             foreach (Item Item in Items)

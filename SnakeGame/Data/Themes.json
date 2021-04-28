@@ -1,0 +1,22 @@
+[
+  {
+	 "Name": "Бирюзовая",
+	 "Apple": "#FFFF4500",
+	 "Background": "#FF339999"
+  },
+  {
+	 "Name": "Серая",
+	 "Apple": "#FFAAAAAA",
+	 "Background": "#FF888888"
+  },
+  {
+	 "Name": "Красная",
+	 "Apple": "#FFFF4500",
+	 "Background": "#FF993333"
+  },
+  {
+	 "Name": "Золотая",
+	 "Apple": "#FFFFFF00",
+	 "Background": "#FFE6C700"
+  }
+]

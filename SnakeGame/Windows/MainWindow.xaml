@@ -207,19 +207,6 @@
                     </Viewbox>
                 </StackPanel>
             </Button>
-            <Rectangle
-                Height="2"
-                Margin="0"
-                Opacity="1"
-                Style="{StaticResource ShadeBox}" />
-            <Button
-                Padding="5"
-                Click="Button_Click_3"
-                GotFocus="Button_GotFocus">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Padding="4,0" Text="Параметры" />
-                </StackPanel>
-            </Button>
             <Rectangle Opacity="1" Style="{StaticResource ShadeBox}" />
             <Grid>
                 <Grid.ColumnDefinitions>

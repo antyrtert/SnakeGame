@@ -8,7 +8,7 @@ namespace SnakeGame
     {
         public App()
         {
-            DispatcherUnhandledException += App_DispatcherUnhandledException;
+            //DispatcherUnhandledException += App_DispatcherUnhandledException;
         }
 
         private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
@@ -16,7 +16,7 @@ namespace SnakeGame
             Window window = new Window()
             {
                 Title = e.Exception.Message,
-                Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x33, 0x33, 0x33)),
+                Style = Resources["WindowStyle"] as Style,
                 Width = 500,
                 Height = 350,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
@@ -26,7 +26,7 @@ namespace SnakeGame
             {
                 Margin = new Thickness(8, 8, 4, 8),
                 Foreground = Brushes.White,
-                Background = new SolidColorBrush(Color.FromArgb(0x88, 0xFF, 0x33, 0x33)),
+                Background = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x33, 0x33)),
                 Content = "Close"
             };
 
@@ -34,7 +34,7 @@ namespace SnakeGame
             {
                 Margin = new Thickness(4, 8, 8, 8),
                 Foreground = Brushes.White,
-                Background = new SolidColorBrush(Color.FromArgb(0x88, 0x33, 0xFF, 0x33)),
+                Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x33, 0xFF, 0x33)),
                 Content = "Continue"
             };
 
@@ -55,12 +55,18 @@ namespace SnakeGame
                 window.Close();
             };
 
+            window.Closing += (_, __) =>
+            {
+                if (!e.Handled)
+                Shutdown();
+            };
+
             Grid.SetColumn(close, 0);
             Grid.SetColumn(ignore, 1);
 
             Grid grid = new Grid()
             {
-                Background = new SolidColorBrush(Color.FromArgb(0x22, 0, 0, 0)),
+                Background = new SolidColorBrush(Color.FromArgb(0x66, 0, 0, 0)),
                 ColumnDefinitions =
                 {
                     new ColumnDefinition(),
@@ -90,6 +96,7 @@ namespace SnakeGame
                     new ScrollViewer()
                     {
                         VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                        HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
                         Content = new TextBox()
                         {
                             Background = Brushes.Transparent,

@@ -6,6 +6,7 @@
     <Style TargetType="{x:Type Button}">
         <Setter Property="Background" Value="{StaticResource AltHighBrush}" />
         <Setter Property="Foreground" Value="{StaticResource BaseHighBrush}" />
+        <Setter Property="Padding" Value="5" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
@@ -22,7 +23,7 @@
                                 Opacity="0.5"
                                 SnapsToDevicePixels="True" />
                             <ContentPresenter
-                                Margin="5"
+                                Margin="{TemplateBinding Padding}"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Focusable="{TemplateBinding Focusable}"

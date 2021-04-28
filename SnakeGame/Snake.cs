@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using Color = SnakeGame.Global.Color;
 using static SnakeGame.Global;
 
 namespace SnakeGame.SnakeLogic
@@ -16,6 +17,8 @@ namespace SnakeGame.SnakeLogic
         public int Width, Height;
         public int?[] Debug;
 
+        public double speed = 5;
+        public int maxApples = 1;
         public List<Snake> Snakes;
         public List<Point> Apples;
 
@@ -25,15 +28,13 @@ namespace SnakeGame.SnakeLogic
             this.Height = Height;
 
             Snakes = new List<Snake>();
+            Apples = new List<Point>();
         }
 
         public void GenFood()
         {
-            int alive = Snakes.Count(snake => snake.alive);
             int apples = Apples.Count;
-
             Random random = new Random();
-
             List<Point> freeSpace = new List<Point>();
 
             for (int x = 0; x < Width; x++)
@@ -50,7 +51,7 @@ namespace SnakeGame.SnakeLogic
             foreach (Point p in Apples)
                 freeSpace.Remove(p);
 
-            while (apples < alive + (alive > 1 ? 1 : 0) && freeSpace.Count > 0)
+            while (apples < maxApples && freeSpace.Count > 0)
             {
                 int a = random.Next(freeSpace.Count);
 
@@ -100,36 +101,27 @@ namespace SnakeGame.SnakeLogic
 
             if (DebugOverlay && Debug != null)
             {
+                GC.Collect();
                 int x = 0, y = 0;
                 foreach (int? i in Debug)
                 {
                     grid.Children.Add(new Border()
                     {
-                        Width = 1,
-                        Height = 1,
-                        Margin = new Thickness(x, y, 0, 0),
+                        Width = 0.6,
+                        Height = 0.6,
+                        CornerRadius = new CornerRadius(1),
+                        Background = GetResource<Brush>("AltLowBrush"),
+                        Margin = new Thickness(x + 0.2, y + 0.2, 0, 0),
                         HorizontalAlignment = HorizontalAlignment.Left,
                         VerticalAlignment = VerticalAlignment.Top,
-                        Child = new Grid()
+                        Child =
+                        new TextBlock()
                         {
-                            Children =
-                            {
-                                new Ellipse()
-                                {
-                                    Height = 0.6,
-                                    Width = 0.6,
-                                    Opacity = 0.5,
-                                    Fill = Application.Current.Resources["AltLowBrush"] as Brush
-                                },
-                                new TextBlock()
-                                {
-                                    VerticalAlignment = VerticalAlignment.Center,
-                                    HorizontalAlignment = HorizontalAlignment.Center,
-                                    FontSize = 0.35,
-                                    Text = i == int.MaxValue ? "#" : $"{i}",
-                                    Foreground = Application.Current.Resources["BaseHighBrush"] as Brush
-                                }
-                            }
+                            VerticalAlignment = VerticalAlignment.Center,
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            FontSize = 0.35,
+                            Text = i == int.MaxValue ? "#" : $"{i}",
+                            Foreground = GetResource<Brush>("BaseHighBrush"),
                         }
                     });
                     if (++x >= Width)
@@ -149,20 +141,21 @@ namespace SnakeGame.SnakeLogic
         private string name;
         public string Name
         {
-            get => bot ? $"Бот {id}" : name;
+            get => bot ? $"Бот {id}" : string.IsNullOrWhiteSpace(name) ? "Без имени" : name;
             set => name = value;
         }
 
         public Color Color;
+        public SolidColorBrush Brush
+            { get => new SolidColorBrush(Color);
+              set => Color = value.Color; }
         public SolidColorBrush TailBrush => new SolidColorBrush(Color);
-        public SolidColorBrush HeadBrush => HsvToRgb(
-            Settings.GetColor(Color).GetHue(),
-            Settings.GetColor(Color).GetSaturation() * 0.5f,
-            Settings.GetColor(Color).GetBrightness() * 2f, 1);
+        public SolidColorBrush HeadBrush => new SolidColorBrush(Color.FromHSV(Color.H, Color.S * 0.5, Color.V, Color.A));
 
         public int id, score = 0;
         public string time = "00:00";
         public bool alive = true, bot = false;
+        public bool? IsBot { get => bot; set => bot = (bool)value; }
 
         public Point HeadPos;
         public List<Point> TailPoints;
