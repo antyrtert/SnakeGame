@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SnakeGame.SnakeLogic;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -28,6 +29,7 @@ namespace SnakeGame
         public static readonly double defaultRefreshTime = 5;
         public static double refreshTime = 1000 / defaultRefreshTime;
         public static string username;
+        public static Field Field;
 
         public static class Save
         {

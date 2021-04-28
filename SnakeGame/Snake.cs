@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SnakeGame.Windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -152,6 +153,13 @@ namespace SnakeGame.SnakeLogic
             set => name = value;
         }
 
+        public Color Color;
+        public SolidColorBrush TailBrush => new SolidColorBrush(Color);
+        public SolidColorBrush HeadBrush => HsvToRgb(
+            Settings.GetColor(Color).GetHue(),
+            Settings.GetColor(Color).GetSaturation() * 0.5f,
+            Settings.GetColor(Color).GetBrightness() * 2f, 1);
+
         public int id, score = 0;
         public string time = "00:00";
         public bool alive = true, bot = false;
@@ -275,11 +283,10 @@ namespace SnakeGame.SnakeLogic
         public Grid Render(Field field)
         {
             Grid grid = new Grid() { Width = field.Width, Height = field.Height };
-            Brush snakeTailBrush = HsvToRgb(id * 360 / field.Snakes.Count + 195, 0.85, 1, 1);
 
             Polyline polyline = new Polyline()
             {
-                Stroke = snakeTailBrush,
+                Stroke = TailBrush,
                 StrokeLineJoin = PenLineJoin.Round,
                 StrokeEndLineCap = PenLineCap.Round,
                 StrokeStartLineCap = PenLineCap.Round,
@@ -312,7 +319,7 @@ namespace SnakeGame.SnakeLogic
                     Y1 = TailPoints[^1].Y + 0.5,
                     X2 = TailPoints[^2].X + 0.5,
                     Y2 = TailPoints[^2].Y + 0.5,
-                    Stroke = snakeTailBrush,
+                    Stroke = TailBrush,
                     StrokeLineJoin = PenLineJoin.Round,
                     StrokeEndLineCap = PenLineCap.Round,
                     StrokeStartLineCap = PenLineCap.Round,
@@ -334,7 +341,7 @@ namespace SnakeGame.SnakeLogic
                     Y1 = TailPoints[^1].Y + 0.5,
                     X2 = HeadPos.X + 0.5,
                     Y2 = HeadPos.Y + 0.5,
-                    Stroke = snakeTailBrush,
+                    Stroke = TailBrush,
                     StrokeLineJoin = PenLineJoin.Round,
                     StrokeEndLineCap = PenLineCap.Round,
                     StrokeStartLineCap = PenLineCap.Round,
@@ -361,7 +368,7 @@ namespace SnakeGame.SnakeLogic
                 HorizontalAlignment = HorizontalAlignment.Left,
                 Width = 0.9,
                 Height = 0.9,
-                Fill = HsvToRgb(id * 360 / field.Snakes.Count + 195, 0.3, 1, 1),
+                Fill = HeadBrush,
             };
 
             if (TailPoints.Count > 0)
@@ -373,7 +380,7 @@ namespace SnakeGame.SnakeLogic
                 {
                     X2 = TailPoints[0].X + 0.5,
                     Y2 = TailPoints[0].Y + 0.5,
-                    Stroke = snakeTailBrush,
+                    Stroke = TailBrush,
                     StrokeLineJoin = PenLineJoin.Round,
                     StrokeEndLineCap = PenLineCap.Round,
                     StrokeStartLineCap = PenLineCap.Round,

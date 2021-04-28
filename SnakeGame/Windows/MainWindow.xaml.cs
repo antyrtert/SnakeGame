@@ -15,10 +15,9 @@ namespace SnakeGame.Windows
     public partial class MainWindow : Window
     {
         private static readonly Vector size = new Vector(11, 11);
-        SnakeLogic.Field Field = new SnakeLogic.Field(size.X, size.Y);
         DateTime start;
         readonly System.Timers.Timer updatetimer = new System.Timers.Timer(refreshTime);
-        bool MultiPlayer = false;
+        bool MultiPlayer => Field.Snakes.Count > 1;
         int id = 0;
 
         public MainWindow()
@@ -40,11 +39,10 @@ namespace SnakeGame.Windows
 
         SnakeLogic.Field GetField()
         {
-            switch (PlayModeCB.SelectedIndex)
+            switch (0)
             {
                 case 0:
                     id = 0;
-                    MultiPlayer = false;
                     return new SnakeLogic.Field(size.X, size.Y)
                     {
                         Snakes = new List<SnakeLogic.Snake>()
@@ -52,6 +50,7 @@ namespace SnakeGame.Windows
                             new SnakeLogic.Snake()
                             {
                                 Name = username, id = 0, bot = false,
+                                Color = HsvToRgb(195, 1, 1, 1).Color,
                                 TailPoints = new List<Point>()
                                 {
                                     new Point(3, 5),
@@ -68,7 +67,6 @@ namespace SnakeGame.Windows
                     };
                 case 1:
                     id = 0;
-                    MultiPlayer = true;
                     return new SnakeLogic.Field(size.X, size.Y)
                     {
                         Snakes = new List<SnakeLogic.Snake>()
@@ -76,6 +74,7 @@ namespace SnakeGame.Windows
                             new SnakeLogic.Snake()
                             {
                                 Name = username, id = 0, bot = false,
+                                Color = Colors.LightSkyBlue,
                                 TailPoints = new List<Point>()
                                 {
                                     new Point(3, 4),
@@ -104,7 +103,6 @@ namespace SnakeGame.Windows
                     };
                 case 2:
                     id = 0;
-                    MultiPlayer = true;
                     return new SnakeLogic.Field(size.X, size.Y)
                     {
                         Snakes = new List<SnakeLogic.Snake>()
@@ -112,6 +110,7 @@ namespace SnakeGame.Windows
                             new SnakeLogic.Snake()
                             {
                                 Name = username, id = 0, bot = true,
+                                Color = Colors.LightSkyBlue,
                                 TailPoints = new List<Point>()
                                 {
                                     new Point(3, 3),
@@ -381,9 +380,12 @@ namespace SnakeGame.Windows
 
         private void Button_Click(object sender, RoutedEventArgs e) =>
             new Settings() { Owner = this }.ShowDialog();
+        private void Button_Click_1(object sender, RoutedEventArgs e) =>
+            Start();
         private void Button_Click_2(object sender, RoutedEventArgs e) =>
             new Scores() { Owner = this }.ShowDialog();
-        private void Button_Click_1(object sender, RoutedEventArgs e) => Start();
+        private void Button_Click_3(object sender, RoutedEventArgs e) =>
+            new GameModeSettings() { Owner = this }.ShowDialog();
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
@@ -408,15 +410,15 @@ namespace SnakeGame.Windows
                     break;
                 case Key.Enter:
                 case Key.Space:
-                    if (!MultiPlayer && !Field.Snakes[id].alive) Start();
+                    if (!MultiPlayer && Field.Snakes.All(snake => !snake.alive)) Start();
                     break;
             }
 
             if (direction != Vector.Zero && Field.Snakes[id].alive)
                 Field.Snakes[id].HeadDirection = direction;
 
-            if (direction != Vector.Zero
-                && !Field.Snakes[id].alive
+            if (Field.Snakes.All(snake => !snake.alive)
+                && direction != Vector.Zero
                 && !MultiPlayer) Start();
         }
 
@@ -426,5 +428,7 @@ namespace SnakeGame.Windows
             FocusManager.SetFocusedElement(FocusManager.GetFocusScope(this), this);
             this.Focus();
         }
+
+
     }
 }

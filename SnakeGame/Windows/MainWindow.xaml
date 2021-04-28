@@ -201,15 +201,26 @@
                 Click="Button_Click_2"
                 GotFocus="Button_GotFocus">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Padding="6,0" Text="Таблица лидеров" />
+                    <TextBlock Padding="4,0" Text="Таблица лидеров" />
                     <Viewbox Height="16">
                         <Path Data="M 2.1035156 0.095703125 A 0.18227722 0.18227722 0 0 0 1.953125 0.1953125 L 1.3984375 1.3222656 L 0.15625 1.5019531 A 0.18227722 0.18227722 0 0 0 0.0546875 1.8125 L 0.953125 2.6894531 L 0.7421875 3.9257812 A 0.18227722 0.18227722 0 0 0 1.0058594 4.1171875 L 2.1171875 3.5332031 L 3.2265625 4.1171875 A 0.18227722 0.18227722 0 0 0 3.4921875 3.9257812 L 3.2792969 2.6894531 L 4.1777344 1.8125 A 0.18227722 0.18227722 0 0 0 4.078125 1.5019531 L 2.8359375 1.3222656 L 2.2792969 0.1953125 A 0.18227722 0.18227722 0 0 0 2.1035156 0.095703125 z M 2.1171875 0.6875 L 2.5507812 1.5683594 A 0.18227722 0.18227722 0 0 0 2.6875 1.6679688 L 3.6601562 1.8105469 L 2.9570312 2.4941406 A 0.18227722 0.18227722 0 0 0 2.9042969 2.65625 L 3.0703125 3.6230469 L 2.2011719 3.1660156 A 0.18227722 0.18227722 0 0 0 2.03125 3.1660156 L 1.1640625 3.6230469 L 1.328125 2.65625 A 0.18227722 0.18227722 0 0 0 1.2773438 2.4941406 L 0.57421875 1.8105469 L 1.5449219 1.6679688 A 0.18227722 0.18227722 0 0 0 1.6816406 1.5683594 L 2.1171875 0.6875 z " Fill="White" />
                     </Viewbox>
                 </StackPanel>
             </Button>
-
+            <Rectangle
+                Height="2"
+                Margin="0"
+                Opacity="1"
+                Style="{StaticResource ShadeBox}" />
+            <Button
+                Padding="5"
+                Click="Button_Click_3"
+                GotFocus="Button_GotFocus">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Padding="4,0" Text="Параметры" />
+                </StackPanel>
+            </Button>
             <Rectangle Opacity="1" Style="{StaticResource ShadeBox}" />
-
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -263,25 +274,13 @@
                 </StackPanel>
             </Grid>
             <Rectangle Style="{StaticResource ShadeBox}" />
-
-            <ComboBox x:Name="PlayModeCB" SelectedIndex="0">
-                <ComboBoxItem Content="Одиночная игра" />
-                <ComboBoxItem Content="игра против бота" />
-                <ComboBoxItem Content="бот против бота" />
-                <ComboBoxItem Content="Многопользовательская игра" IsEnabled="False" />
-            </ComboBox>
-            <Rectangle
-                Height="2"
-                Margin="0"
-                Opacity="1"
-                Style="{StaticResource ShadeBox}" />
             <Button
                 Padding="5"
                 Click="Button_Click_1"
                 GotFocus="Button_GotFocus">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Padding="6,0" Text="Начать" />
+                        <TextBlock Padding="4,0" Text="Начать" />
                         <Viewbox Height="14">
                             <Path Data="M 0.79289287,1.0582388e-4 A 0.31984427,0.31984427 0 0 0 0.48130558,0.320462 c 5.8404e-4,0.9235147 5.8342e-4,2.6681754 0,3.5917307 A 0.32038745,0.32038745 0 0 0 0.97879302,4.1799354 C 1.6662189,3.7223597 2.8875092,2.9075811 3.5743794,2.4489599 a 0.39969024,0.39969024 0 0 0 0,-0.6646806 L 0.97879302,0.05388825 A 0.31984427,0.31984427 0 0 0 0.79289287,1.0582388e-4 Z M 1.0314063,0.66069432 a 0.07985749,0.07985749 0 0 1 0.053198,0.0134456 L 3.1236599,2.0333152 a 0.10001581,0.10001581 0 0 1 0,0.1666088 C 2.7204426,2.4695512 1.4884113,3.2912958 1.084604,3.5596841 A 0.0800688,0.0800688 0 0 1 0.96008612,3.4924557 c 6.376e-4,-0.5256003 6.381e-4,-2.2267195 0,-2.75225694 a 0.07985749,0.07985749 0 0 1 0.0713202,-0.0795044 z" Fill="White" />
                         </Viewbox>
