@@ -16,6 +16,28 @@
             <RowDefinition />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
+        <ScrollViewer Padding="5" VerticalScrollBarVisibility="Auto">
+            <StackPanel Orientation="Vertical">
+                <Label Content="Размер поля" />
+                <Label Padding="3" HorizontalContentAlignment="Stretch">
+                    <StackPanel Orientation="Vertical">
+                        <ComboBox x:Name="FieldSizeCB" SelectedIndex="1">
+                            <ComboBoxItem Content="9x9" />
+                            <ComboBoxItem Content="11x11" />
+                            <ComboBoxItem Content="13x13" />
+                            <ComboBoxItem Content="15x15" />
+                            <ComboBoxItem Content="17x17" />
+                            <ComboBoxItem Content="21x21" />
+                        </ComboBox>
+                        <Rectangle
+                            Margin="0"
+                            Opacity="0.75"
+                            Style="{StaticResource ShadeBox}" />
+                    </StackPanel>
+                </Label>
+                <Rectangle Style="{StaticResource ShadeBox}" />
+            </StackPanel>
+        </ScrollViewer>
         <Grid Grid.Row="1" Background="{StaticResource AltLowBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -26,14 +48,20 @@
                 Margin="5,5,3,3"
                 Orientation="Vertical">
                 <Button Content="Отменить" />
-                <Rectangle Opacity="1" Style="{StaticResource ShadeBox}" />
+                <Rectangle
+                    Margin="0"
+                    Opacity="1"
+                    Style="{StaticResource ShadeBox}" />
             </StackPanel>
             <StackPanel
                 Grid.Column="1"
                 Margin="3,5,5,3"
                 Orientation="Vertical">
                 <Button Content="Применить" />
-                <Rectangle Opacity="1" Style="{StaticResource ShadeBox}" />
+                <Rectangle
+                    Margin="0"
+                    Opacity="1"
+                    Style="{StaticResource ShadeBox}" />
             </StackPanel>
         </Grid>
     </Grid>
