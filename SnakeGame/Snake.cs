@@ -7,7 +7,10 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using Color = SnakeGame.Global.Color;
+using Color = AMath.Color;
+using AMath;
+using Point = AMath.Point;
+using Vector = AMath.Vector;
 using static SnakeGame.Global;
 
 namespace SnakeGame.SnakeLogic
@@ -92,7 +95,7 @@ namespace SnakeGame.SnakeLogic
                     {
                         Height = 0.85,
                         Width = 0.85,
-                        Fill = Application.Current.Resources["AppleBrush"] as Brush
+                        Fill = GetResource<Brush>("AppleBrush")
                     }
                 });
 
@@ -355,17 +358,21 @@ namespace SnakeGame.SnakeLogic
                 grid.Children.Add(end);
             }
 
+            SolidColorBrush headBrush = HeadBrush;
+
             Ellipse headEllipse = new Ellipse()
             {
                 VerticalAlignment = VerticalAlignment.Top,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 Width = 0.9,
                 Height = 0.9,
-                Fill = HeadBrush,
+                Fill = headBrush,
             };
 
             if (TailPoints.Count > 0)
                 headEllipse.Margin = new Thickness(TailPoints[0].X + 0.05, TailPoints[0].Y + 0.05, 0, 0);
+            else headBrush.BeginAnimation(SolidColorBrush.ColorProperty,
+                new ColorAnimation(Colors.Transparent, GetrefreshTimeSpan()));
 
             if (alive)
             {

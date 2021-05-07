@@ -1,58 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using System.Text.RegularExpressions;
 using System.Windows.Shapes;
-using static SnakeGame.Global;
 using Color = System.Windows.Media.Color;
-using Clr = SnakeGame.Global.Color;
-using System.Windows.Media.Animation;
 
 namespace SnakeGame.Windows
 {
     public partial class PickColor : Window
     {
+        Regex hex = new Regex(@"^#([a-fA-F0-9]{6})$");
         bool apply = false;
-        public Clr Color;
-        public PickColor(Clr clr)
+        private double H, S, V;
+        public AMath.Color Color;
+        public PickColor(AMath.Color clr)
         {
             InitializeComponent();
             Closing += (_, __) => Color = apply ? Color : clr;
-            Loaded += (_, __) =>
-            {
 
-                HueTB.Text = $"{clr.H:0.000}";
-                SaturationTB.Text = $"{clr.S:0.000}";
-                ValueTB.Text = $"{clr.V:0.000}";
-            };
+            (H, S, V) = (clr.H, clr.S, clr.V);
+
+            Loaded += (_, __) => Update();
         }
 
         private void Update()
         {
-            if (HueTB != null && SaturationTB != null && ValueTB != null && HexTB != null)
+            Resources["PreviewColorHue"] = (Color)AMath.Color.FromHSV(H, 1, 1, 1);
+            Resources["PreviewColorSat"] = (Color)AMath.Color.FromHSV(H, S, 1, 1);
+            Resources["PreviewColorVal"] = (Color)AMath.Color.FromHSV(H, S, V, 1);
+            Resources["PreviewColor"] = (Color)AMath.Color.FromHSV(H, S, V, 1);
+
+            Color = AMath.Color.FromHSV(H, S, V);
+
+            if (HexTB is TextBox && HueTB is TextBox && SaturationTB is TextBox && ValueTB is TextBox)
             {
-                if (double.TryParse(HueTB.Text.Replace('.', ','), out double hue))
-                    if (double.TryParse(SaturationTB.Text.Replace('.', ','), out double sat))
-                        if (double.TryParse(ValueTB.Text.Replace('.', ','), out double val))
-                        {
-                            Resources["PreviewColorHue"] = (Color)Clr.FromHSV(hue, 1, 1, 1);
-                            Resources["PreviewColorSat"] = (Color)Clr.FromHSV(hue, sat, 1, 1);
-                            Color = Clr.FromHSV(hue, sat, val, 1);
-                            Resources["PreviewColorVal"] = (Color)Color;
-                            Resources["PreviewColor"] = (Color)Color;
+                if (HueCaret is Rectangle && SatCaret is Rectangle && ValCaret is Rectangle)
+                {
+                    HueCaret.Margin = new Thickness(H / 360d * (HueGrid.ActualWidth - 6), -3, 0, -3);
+                    SatCaret.Margin = new Thickness(S * (SatGrid.ActualWidth - 6), -3, 0, -3);
+                    ValCaret.Margin = new Thickness(V * (ValGrid.ActualWidth - 6), -3, 0, -3);
+                }
 
-                            if (Color.L > 0.5)
-                                HexTB.Foreground = Brushes.Black;
-                            else HexTB.Foreground = Brushes.White;
+                int hexTBcaret = HexTB.CaretIndex,
+                    hueTBcaret = HueTB.CaretIndex,
+                    saturationTBcaret = SaturationTB.CaretIndex,
+                    valueTBcaret = ValueTB.CaretIndex;
 
-                            HexTB.Text = Color.ToString().Remove(1, 2);
-                        }
+                HueTB.Text = $"{H:0.000}";
+                SaturationTB.Text = $"{S:0.000}";
+                ValueTB.Text = $"{V:0.000}";
+
+                HexTB.Text = Color.ToString().Remove(1, 2);
+
+                HexTB.CaretIndex = hexTBcaret;
+                HueTB.CaretIndex = hueTBcaret;
+                SaturationTB.CaretIndex = saturationTBcaret;
+                ValueTB.CaretIndex = valueTBcaret;
+
+                HexTB.Foreground = Color.L > 0.5 ? Brushes.Black : Brushes.White;
             }
         }
 
@@ -72,9 +78,10 @@ namespace SnakeGame.Windows
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                double val = Clamp((e.GetPosition(HueGrid).X - 3) / (HueGrid.ActualWidth - 6), 0, 1);
+                double val = Clamp((e.GetPosition(HueGrid).X - 3) / (HueGrid.ActualWidth - 6));
 
-                HueTB.Text = $"{val * 360:0.000}";
+                H = val * 360;
+                Update();
             }
         }
 
@@ -82,9 +89,10 @@ namespace SnakeGame.Windows
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                double val = Clamp((e.GetPosition(SatGrid).X - 3) / (SatGrid.ActualWidth - 6), 0, 1);
+                double val = Clamp((e.GetPosition(SatGrid).X - 3) / (SatGrid.ActualWidth - 6));
 
-                SaturationTB.Text = $"{val:0.000}";
+                S = val;
+                Update();
             }
         }
 
@@ -92,56 +100,52 @@ namespace SnakeGame.Windows
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                double val = Clamp((e.GetPosition(ValGrid).X - 3) / (ValGrid.ActualWidth - 6), 0, 1);
+                double val = Clamp((e.GetPosition(ValGrid).X - 3) / (ValGrid.ActualWidth - 6));
 
-                ValueTB.Text = $"{val:0.000}";
+                V = val;
+                Update();
             }
         }
 
-        private void HueTB_TextChanged(object sender, TextChangedEventArgs e)
+        private void HueTB_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Changes.Count > 0)
-                if (HueGrid.ActualWidth > 0)
-                    if (double.TryParse(HueTB.Text.Replace('.', ','), out double val))
-                        HueCaret.Margin = new Thickness(val / 360d * (HueGrid.ActualWidth - 6), -3, 0, -3);
+            if (double.TryParse(HueTB.Text.Replace('.', ','), out double val))
+                H = System.Math.Abs(val % 360);
 
             Update();
         }
 
-        private void SaturationTB_TextChanged(object sender, TextChangedEventArgs e)
+        private void SaturationTB_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Changes.Count > 0)
-                if (SatGrid.ActualWidth > 0)
-                    if (double.TryParse(SaturationTB.Text.Replace('.', ','), out double val))
-                        SatCaret.Margin = new Thickness(val * (SatGrid.ActualWidth - 6), -3, 0, -3);
+            if (double.TryParse(SaturationTB.Text.Replace('.', ','), out double val))
+                S = Clamp(val);
 
             Update();
         }
 
-        private void ValueTB_TextChanged(object sender, TextChangedEventArgs e)
+        private void ValueTB_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Changes.Count > 0)
-                if (ValGrid.ActualWidth > 0)
-                    if (double.TryParse(ValueTB.Text.Replace('.', ','), out double val))
-                        ValCaret.Margin = new Thickness(val * (ValGrid.ActualWidth - 6), -3, 0, -3);
+            if (double.TryParse(ValueTB.Text.Replace('.', ','), out double val))
+                V = Clamp(val);
 
             Update();
         }
 
-        public double Clamp(double value, double min, double max) =>
+        public double Clamp(double value, double min = 0, double max = 1) =>
            value > min ? (value < max ? value : max) : min;
 
-        private void HexTB_KeyDown(object sender, KeyEventArgs e)
+        private void HexTB_KeyUp(object sender, KeyEventArgs e)
         {
-            if (!new System.Text.RegularExpressions.Regex(
-                @"^#([a-fA-F0-9]{8}|[a-fA-F0-9]{6}|[a-fA-F0-9]{3})$")
-                .IsMatch((sender as TextBox).Text))
+            if (!hex.IsMatch((sender as TextBox).Text))
                 return;
-            Clr color = Clr.FromHex((sender as TextBox).Text);
 
-            HueTB.Text = $"{color.H:0.000}";
-            SaturationTB.Text = $"{color.S:0.000}";
-            ValueTB.Text = $"{color.V:0.000}";
+            AMath.Color color = AMath.Color.FromHex((sender as TextBox).Text);
+
+            H = color.H;
+            S = color.S;
+            V = color.V;
+
+            Update();
         }
     }
 }

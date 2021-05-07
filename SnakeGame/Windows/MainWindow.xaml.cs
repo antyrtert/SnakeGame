@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -7,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Vector = AMath.Vector;
 using static SnakeGame.Global;
 using FocusManager = System.Windows.Input.FocusManager;
 using Key = System.Windows.Input.Key;
@@ -67,7 +67,7 @@ namespace SnakeGame.Windows
             foreach (SnakeLogic.Snake snake in Field.Snakes)
             {
                 SolidColorBrush background = snake.Brush;
-                SolidColorBrush foreground = ((Global.Color)background.Color).L > 0.5 ?
+                SolidColorBrush foreground = ((AMath.Color)background.Color).L > 0.5 ?
                     Brushes.Black : Brushes.White;
 
                 NameLabelSP.Children.Add(new Label()

@@ -36,8 +36,9 @@
             VerticalContentAlignment="Center"
             Background="Transparent"
             BorderThickness="0"
-            KeyUp="HexTB_KeyDown"
-            Text="#000000">
+            KeyUp="HexTB_KeyUp"
+            Text="#000000"
+            ToolTip="Hex">
             <TextBox.Foreground>
                 <SolidColorBrush Color="{DynamicResource BaseHigh}" />
             </TextBox.Foreground>
@@ -55,7 +56,8 @@
                 Margin="10"
                 MouseLeftButtonDown="Slider_MouseDown"
                 MouseMove="HueGrid_MouseMove"
-                MouseUp="Slider_MouseUp">
+                MouseUp="Slider_MouseUp"
+                ToolTip="Hue">
                 <Border>
                     <Border.Background>
                         <LinearGradientBrush EndPoint="1,0">
@@ -77,7 +79,7 @@
                     x:Name="HueCaret"
                     Width="6"
                     Height="30"
-                    Margin="-3"
+                    Margin="0,-3"
                     HorizontalAlignment="Left"
                     Fill="{StaticResource PreviewBrushHue}"
                     IsHitTestVisible="False"
@@ -89,7 +91,8 @@
                 Margin="10"
                 MouseLeftButtonDown="Slider_MouseDown"
                 MouseMove="SatGrid_MouseMove"
-                MouseUp="Slider_MouseUp">
+                MouseUp="Slider_MouseUp"
+                ToolTip="Saturation">
                 <Border>
                     <Border.Background>
                         <LinearGradientBrush EndPoint="1,0">
@@ -106,7 +109,7 @@
                     x:Name="SatCaret"
                     Width="6"
                     Height="30"
-                    Margin="-3"
+                    Margin="0,-3"
                     HorizontalAlignment="Left"
                     Fill="{StaticResource PreviewBrushSat}"
                     IsHitTestVisible="False"
@@ -118,7 +121,8 @@
                 Margin="10"
                 MouseLeftButtonDown="Slider_MouseDown"
                 MouseMove="ValGrid_MouseMove"
-                MouseUp="Slider_MouseUp">
+                MouseUp="Slider_MouseUp"
+                ToolTip="Value">
                 <Border>
                     <Border.Background>
                         <LinearGradientBrush EndPoint="1,0">
@@ -135,7 +139,7 @@
                     x:Name="ValCaret"
                     Width="6"
                     Height="30"
-                    Margin="-3"
+                    Margin="0,-3"
                     HorizontalAlignment="Left"
                     Fill="{StaticResource PreviewBrushVal}"
                     IsHitTestVisible="False"
@@ -156,8 +160,9 @@
                     Background="{StaticResource AltLowBrush}"
                     BorderThickness="0"
                     Foreground="{StaticResource BaseHighBrush}"
+                    KeyUp="HueTB_KeyUp"
                     Text="0"
-                    TextChanged="HueTB_TextChanged" />
+                    ToolTip="Hue" />
                 <Rectangle
                     Grid.Column="0"
                     Margin="3,-2"
@@ -172,8 +177,9 @@
                     Background="{StaticResource AltLowBrush}"
                     BorderThickness="0"
                     Foreground="{StaticResource BaseHighBrush}"
+                    KeyUp="SaturationTB_KeyUp"
                     Text="0"
-                    TextChanged="SaturationTB_TextChanged" />
+                    ToolTip="Saturation" />
                 <Rectangle
                     Grid.Column="1"
                     Margin="3,-2"
@@ -188,8 +194,9 @@
                     Background="{StaticResource AltLowBrush}"
                     BorderThickness="0"
                     Foreground="{StaticResource BaseHighBrush}"
+                    KeyUp="ValueTB_KeyUp"
                     Text="0"
-                    TextChanged="ValueTB_TextChanged" />
+                    ToolTip="Value" />
                 <Rectangle
                     Grid.Column="2"
                     Margin="3,-2"

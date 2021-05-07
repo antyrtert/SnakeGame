@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Point = AMath.Point;
 using static SnakeGame.Global;
 using Color = System.Windows.Media.Color;
 
@@ -200,7 +201,7 @@ namespace SnakeGame.Windows
                 Application.Current.Resources["Apple"]      = Apple;
                 Application.Current.Resources["Background"] = Background;
 
-                byte v = (byte)((((Global.Color)Background).V > 1 / 5f) ? 0x22 : 0x66);
+                byte v = (byte)((((AMath.Color)Background).V > 1 / 5f) ? 0x22 : 0x66);
 
                 Application.Current.Resources["BaseHigh"]   = Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF);
                 Application.Current.Resources["AltHigh"]    = Color.FromArgb(0x88, v, v, v);
@@ -222,7 +223,7 @@ namespace SnakeGame.Windows
             if (Snakes.Count == 0)
                 Snakes.Add(new SnakeLogic.Snake()
                 {
-                    Color = Global.Color.FromInt32(0xFF00BEFF)
+                    Color = AMath.Color.FromInt32(0xFF00BEFF)
                 });
 
             for (int i = 0; i < Snakes.Count; i++)
@@ -258,7 +259,7 @@ namespace SnakeGame.Windows
             if (Snakes.Count < 5)
                 Snakes.Add(new SnakeLogic.Snake()
                 {
-                    Color = Global.Color.FromHSV(new Random(Snakes.Count * Snakes.Count).NextDouble() * 360, 1, 1, 1),
+                    Color = AMath.Color.FromHSV(new Random(Snakes.Count * Snakes.Count).NextDouble() * 360, 1, 1, 1),
                     bot = true
                 });
 
@@ -274,7 +275,7 @@ namespace SnakeGame.Windows
             if (Snakes.Count == 0)
                 Snakes.Add(new SnakeLogic.Snake()
                 {
-                    Color = Global.Color.FromInt32(0xFF00BEFF)
+                    Color = AMath.Color.FromInt32(0xFF00BEFF)
                 });
 
             SnakesLV.ItemsSource = new List<SnakeLogic.Snake>();
