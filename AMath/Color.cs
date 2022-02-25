@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace AMath
 {
-    public class Color
+    [Serializable]
+    public struct Color
     {
         public double A, R, G, B;
 
@@ -15,18 +17,12 @@ namespace AMath
         public double H => GetHue();
         public double S => Max(R, G, B) == 0 ? 0 : 1d - Min(R, G, B) / Max(R, G, B);
         public double V => Max(R, G, B);
-        public double L => R * 0.2627 + G * 0.6780 + B * 0.0593;
-
-        public static implicit operator System.Drawing.Color(Color color) =>
-            System.Drawing.Color.FromArgb(color.a, color.r, color.g, color.b);
+        public double L => R * 0.2627d + G * 0.6780d + B * 0.0593d;
 
         public static implicit operator System.Windows.Media.Color(Color color) =>
             System.Windows.Media.Color.FromArgb(color.a, color.r, color.g, color.b);
 
         public static implicit operator Color(System.Windows.Media.Color color) =>
-            FromArgb(color.A, color.R, color.G, color.B);
-
-        public static implicit operator Color(System.Drawing.Color color) =>
             FromArgb(color.A, color.R, color.G, color.B);
 
         public static Color FromInt32(uint val)
@@ -56,9 +52,16 @@ namespace AMath
 
         public static Color FromHex(string hex)
         {
-            if (new System.Text.RegularExpressions.Regex(
-                @"^#([a-fA-F0-9]{8}|[a-fA-F0-9]{6}|[a-fA-F0-9]{4}|[a-fA-F0-9]{3})$").IsMatch(hex))
-                return (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(hex);
+            if (new Regex(@"^(#|0x)?([a-fA-F0-9]{8}|[a-fA-F0-9]{6}|[a-fA-F0-9]{4}|[a-fA-F0-9]{3})$").IsMatch(hex))
+                return (hex = hex.Replace("#", "0x")).Replace("0x", string.Empty).Length switch
+                {
+                    3 => FromInt16(unchecked((ushort)(Convert.ToInt16(hex, 16) | 0xF000))),
+                    4 => FromInt16(unchecked((ushort)Convert.ToInt16(hex, 16))),
+                    6 => FromInt32(unchecked((uint)(Convert.ToInt32(hex, 16) | 0xFF000000))),
+                    8 => FromInt32(unchecked((uint)Convert.ToInt32(hex, 16))),
+
+                    _ => new Color()
+                };
             return new Color();
         }
 
@@ -68,23 +71,23 @@ namespace AMath
         public static Color FromRgb(double R, double G, double B) =>
             new Color() { A = 1, R = R, G = G, B = B };
 
+        private const double btd = 1d / byte.MaxValue; // Byte to Double
         public static Color FromArgb(byte A, byte R, byte G, byte B) =>
-            new Color() { A = A / 255d, R = R / 255d, G = G / 255d, B = B / 255d };
+            new Color() { A = A * btd, R = R * btd, G = G * btd, B = B * btd };
 
         public static Color FromRgb(byte R, byte G, byte B) =>
-            new Color() { A = 1, R = R / 255d, G = G / 255d, B = B / 255d };
+            new Color() { A = 1, R = R * btd, G = G * btd, B = B * btd };
 
         public static Color FromHSV(double Hue, double Saturation, double Value, double A = 1)
         {
-            while (Hue < 0) Hue += 360;
-            while (Hue >= 360) Hue -= 360;
+            Hue %= 360;
             Saturation = Saturation < 1 ? (Saturation > 0 ? Saturation : 0) : 1;
             Value = Value < 1 ? (Value > 0 ? Value : 0) : 1;
 
             double C = Value * Saturation,
                    H = Hue / 60d,
-                   X = C * (1d - Math.Abs((H % 2) - 1)),
-                   m = Value - C + 1 / 512d;
+                   X = C * (1d - Math.Abs(H % 2 - 1)),
+                   m = Value - C + 0.5d * btd;
 
             C += m;
             X += m;
@@ -102,12 +105,13 @@ namespace AMath
         public double GetHue()
         {
             double max = Max(R, G, B),
-                   min = Min(R, G, B);
+                   min = Min(R, G, B),
+                   delta = 60 / (max - min);
 
             if (max == min) return 0;
-            if (max == R) return 60 * (G - B) / (max - min) + (G < B ? 360 : 0);
-            if (max == G) return 60 * (B - R) / (max - min) + 120;
-            if (max == B) return 60 * (R - G) / (max - min) + 240;
+            if (max == R) return (G - B) * delta + (G < B ? 360 : 0);
+            if (max == G) return (B - R) * delta + 120;
+            if (max == B) return (R - G) * delta + 240;
 
             return 0;
         }
@@ -115,11 +119,8 @@ namespace AMath
         public override string ToString() => "#" +
             Convert.ToString((a << 24) + (r << 16) + (g << 8) + b, 16).ToUpper().PadLeft(8, '0');
 
-        private static double Max(params double[] value) =>
-            value.Max();
-
-        private static double Min(params double[] value) =>
-            value.Min();
+        private static double Max(params double[] value) => value.Max();
+        private static double Min(params double[] value) => value.Min();
 
         private static byte ClampToByte(double i) =>
             (byte)(i > 0 ? (i < 1 ? i * 255 : 255) : 0);

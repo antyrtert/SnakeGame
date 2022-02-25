@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Bson;
-using SnakeGame.SnakeLogic;
+﻿using SnakeGame.SnakeLogic;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using AMath;
 using Point = AMath.Point;
+using System.Text.Json;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace SnakeGame
 {
@@ -31,7 +31,7 @@ namespace SnakeGame
 
         public static readonly double defaultRefreshTime = 5;
         public static double refreshTime = 1000 / defaultRefreshTime;
-        public static string username;
+        public static string username = "Без имени";
         public static Field Field;
         public static Field FieldPreset = new Field(11, 11)
         {
@@ -64,34 +64,31 @@ namespace SnakeGame
         public static void SetResource<T>(string name, T value) =>
             System.Windows.Application.Current.Resources[name] = value;
 
-        public static T Clone<T>(object obj) =>
-            JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj));
-
         public static class Save
         {
-            public static void SerializeBin<T>(IList<T> o, string file)
+            public static void SerializeBin<T>(List<T> obj, string file)
             {
-                MemoryStream ms = new MemoryStream();
-                using (BsonWriter writer = new BsonWriter(ms))
+                if (!File.Exists(file))
                 {
-                    JsonSerializer serializer = new JsonSerializer();
-                    serializer.Serialize(writer, o);
+                    Directory.CreateDirectory(file[..file.LastIndexOf('\\')]);
+                    File.Create(file).Dispose();
                 }
 
-                File.WriteAllText(file, Convert.ToBase64String(ms.ToArray()));
+                using FileStream ms = File.OpenWrite(file);
+                BinaryFormatter formatter = new();
+                
+                formatter.Serialize(ms, obj);
             }
 
-            public static IList<T> DeSerializeBin<T>(string file)
+            public static List<T> DeSerializeBin<T>(string file)
             {
-                byte[] data = Convert.FromBase64String(File.ReadAllText(file));
+                if (!File.Exists(file)) return new List<T>();
 
-                MemoryStream ms = new MemoryStream(data);
-                using (BsonReader reader = new BsonReader(ms))
-                {
-                    reader.ReadRootValueAsArray = true;
-                    JsonSerializer serializer = new JsonSerializer();
-                    return serializer.Deserialize<IList<T>>(reader);
-                }
+                using FileStream ms = File.OpenRead(file);
+                BinaryFormatter formatter = new();
+                
+                if (ms.Length == 0) return new List<T>();
+                return (List<T>)formatter.Deserialize(ms);
             }
         }
     }

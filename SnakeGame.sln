@@ -1,33 +1,37 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30804.86
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnakeGame", "SnakeGame\SnakeGame.csproj", "{C5D1203C-EC9F-4055-8127-103D312A7611}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Debugger", "Debugger\Debugger.csproj", "{259180E7-E6B2-4CDA-AF25-28A53C4B8DD6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AMath", "AMath\AMath.csproj", "{FA93AFA5-4D1C-4E10-A749-28553608E56E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AMath", "AMath\AMath.csproj", "{FA93AFA5-4D1C-4E10-A749-28553608E56E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
 		Description = Simple snake game
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C5D1203C-EC9F-4055-8127-103D312A7611}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C5D1203C-EC9F-4055-8127-103D312A7611}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5D1203C-EC9F-4055-8127-103D312A7611}.Debug|x86.ActiveCfg = Release|x86
+		{C5D1203C-EC9F-4055-8127-103D312A7611}.Debug|x86.Build.0 = Release|x86
 		{C5D1203C-EC9F-4055-8127-103D312A7611}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5D1203C-EC9F-4055-8127-103D312A7611}.Release|Any CPU.Build.0 = Release|Any CPU
-		{259180E7-E6B2-4CDA-AF25-28A53C4B8DD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{259180E7-E6B2-4CDA-AF25-28A53C4B8DD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{259180E7-E6B2-4CDA-AF25-28A53C4B8DD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{259180E7-E6B2-4CDA-AF25-28A53C4B8DD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5D1203C-EC9F-4055-8127-103D312A7611}.Release|x86.ActiveCfg = Release|x86
+		{C5D1203C-EC9F-4055-8127-103D312A7611}.Release|x86.Build.0 = Release|x86
 		{FA93AFA5-4D1C-4E10-A749-28553608E56E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FA93AFA5-4D1C-4E10-A749-28553608E56E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA93AFA5-4D1C-4E10-A749-28553608E56E}.Debug|x86.ActiveCfg = Release|x86
+		{FA93AFA5-4D1C-4E10-A749-28553608E56E}.Debug|x86.Build.0 = Release|x86
 		{FA93AFA5-4D1C-4E10-A749-28553608E56E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA93AFA5-4D1C-4E10-A749-28553608E56E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA93AFA5-4D1C-4E10-A749-28553608E56E}.Release|x86.ActiveCfg = Release|x86
+		{FA93AFA5-4D1C-4E10-A749-28553608E56E}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

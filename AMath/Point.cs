@@ -1,6 +1,8 @@
-﻿namespace AMath
+﻿using System;
+
+namespace AMath
 {
-    public interface IPoint
+    public interface IVec2
     {
         public int X { get; set; }
         public int Y { get; set; }
@@ -8,13 +10,14 @@
         public string ToString() => $"{X}; {Y}";
     }
 
-    public class Point : IPoint
+    [Serializable]
+    public struct Point : IVec2
     {
         public int X, Y;
         public static readonly Point Zero = new Point(0, 0);
 
-        int IPoint.X { get => X; set => X = value; }
-        int IPoint.Y { get => Y; set => Y = value; }
+        int IVec2.X { get => X; set => X = value; }
+        int IVec2.Y { get => Y; set => Y = value; }
 
         public Point(int x, int y) =>
             (X, Y) = (x, y);

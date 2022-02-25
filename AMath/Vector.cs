@@ -1,6 +1,9 @@
-﻿namespace AMath
+﻿using System;
+
+namespace AMath
 {
-    public class Vector : IPoint
+    [Serializable]
+    public struct Vector : IVec2
     {
         public int X, Y;
         public static readonly Vector
@@ -10,8 +13,8 @@
             Down  = new Vector(0, 1),
             Zero  = new Vector(0, 0);
 
-        int IPoint.X { get => X; set => X = value; }
-        int IPoint.Y { get => Y; set => Y = value; }
+        int IVec2.X { get => X; set => X = value; }
+        int IVec2.Y { get => Y; set => Y = value; }
 
         public Vector(int x, int y) =>
             (X, Y) = (x, y);

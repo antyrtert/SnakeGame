@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Timers;
 using System.Windows;
 using static SnakeGame.Global;
@@ -15,12 +14,12 @@ namespace SnakeGame.Windows
         {
             InitializeComponent();
 
-            Timer.Elapsed += (_, __) => BlockUpDate();
+            Timer.Elapsed += (_, __) => BlockUpdate();
 
             List.Loaded += (_, __) => Button_Click_1(null, null);
         }
 
-        private void BlockUpDate()
+        private void BlockUpdate()
         {
             if ((nextUpDate - DateTime.Now).TotalSeconds > 0)
             {
@@ -46,7 +45,7 @@ namespace SnakeGame.Windows
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             nextUpDate = DateTime.Now + TimeSpan.FromSeconds(5);
-            BlockUpDate();
+            BlockUpdate();
             Timer.Start();
 
             List<Item> Items = (List<Item>)Save.DeSerializeBin<Item>(Environment.CurrentDirectory + "\\Data\\Scores.bin");
@@ -68,6 +67,7 @@ namespace SnakeGame.Windows
         }
     }
 
+    [Serializable]
     public class Item : IComparable<Item>
     {
         public string Place { get; set; }
@@ -86,17 +86,13 @@ namespace SnakeGame.Windows
             this.Date = Date;
         }
 
-        public int CompareTo([AllowNull] Item other)
+        public int CompareTo(Item other)
         {
             int a = int.Parse(Score), b = int.Parse(other.Score),
                 sa = int.Parse(Time.Split(':')[0]) * 60 + int.Parse(Time.Split(':')[1]),
                 sb = int.Parse(other.Time.Split(':')[0]) * 60 + int.Parse(other.Time.Split(':')[1]);
 
-            return a == b ? (
-                    sa == sb ?
-                        DateTime.Parse(Date).CompareTo(DateTime.Parse(other.Date))
-                        : -sa.CompareTo(sb))
-                : a.CompareTo(b);
+            return a == b ? (sa == sb ? DateTime.Parse(Date).CompareTo(DateTime.Parse(other.Date)) : -sa.CompareTo(sb)) : a.CompareTo(b);
         }
     }
 }

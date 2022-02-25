@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
@@ -10,6 +9,8 @@ using System.Windows.Shapes;
 using Point = AMath.Point;
 using static SnakeGame.Global;
 using Color = System.Windows.Media.Color;
+using System.Text.Json;
+using System.Reflection;
 
 namespace SnakeGame.Windows
 {
@@ -44,7 +45,10 @@ namespace SnakeGame.Windows
                     FieldSizeCB.SelectedIndex = 5;
                     break;
             }
-            Snakes = Clone<List<SnakeLogic.Snake>>(FieldPreset.Snakes);
+            Snakes = new List<SnakeLogic.Snake>();
+
+            foreach (var snake in FieldPreset.Snakes)
+                Snakes.Add(snake);
 
             SnakesLV.ItemsSource = Snakes;
         }
@@ -81,9 +85,31 @@ namespace SnakeGame.Windows
 
         public void LoadUserThemes()
         {
-            List<UserTheme> list =
-                JsonConvert.DeserializeObject<List<UserTheme>>(
-                    File.ReadAllText(Environment.CurrentDirectory + "\\Data\\Themes.json"));
+            string json =
+@"[
+{
+    ""Name"": ""Бирюзовая"",
+	""Apple"": ""#FFFF4500"",
+	""Background"": ""#FF339999""
+},
+{
+    ""Name"": ""Серая"",
+	""Apple"": ""#FFAAAAAA"",
+	""Background"": ""#FF888888""
+},
+{
+    ""Name"": ""Красная"",
+	""Apple"": ""#FFFF4500"",
+	""Background"": ""#FF993333""
+},
+{
+    ""Name"": ""Золотая"",
+	""Apple"": ""#FFFFFF00"",
+	""Background"": ""#FFE6C700""
+}
+]";
+
+            List<UserTheme> list = JsonSerializer.Deserialize<List<UserTheme>>(json);
 
             int uti = userThemeId;
             userThemesList.Items.Clear();
@@ -132,7 +158,9 @@ namespace SnakeGame.Windows
                                             StrokeEndLineCap = PenLineCap.Round,
                                             StrokeStartLineCap = PenLineCap.Round,
                                             StrokeThickness = 0.75,
-                                            Stroke = GetResource("AccentBrush") as Brush
+                                            Stroke = GetResource("AccentBrush") as Brush,
+                                            SnapsToDevicePixels = false,
+                                            UseLayoutRounding = false
                                         },
                                         new Ellipse()
                                         {
@@ -201,14 +229,19 @@ namespace SnakeGame.Windows
                 Application.Current.Resources["Apple"]      = Apple;
                 Application.Current.Resources["Background"] = Background;
 
-                byte v = (byte)((((AMath.Color)Background).V > 1 / 5f) ? 0x22 : 0x66);
+                byte f = 0xFF,
+                     b = 0x22;
+                if (((AMath.Color)Background).L > 0.8d)
+                    f = 0x00;
+                else if (((AMath.Color)Background).L < 1 / 3d)
+                    b = 0x66;
 
-                Application.Current.Resources["BaseHigh"]   = Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF);
-                Application.Current.Resources["AltHigh"]    = Color.FromArgb(0x88, v, v, v);
-                Application.Current.Resources["AltMedHigh"] = Color.FromArgb(0x66, v, v, v);
-                Application.Current.Resources["AltMed"]     = Color.FromArgb(0x44, v, v, v);
-                Application.Current.Resources["AltMedLow"]  = Color.FromArgb(0x33, v, v, v);
-                Application.Current.Resources["AltLow"]     = Color.FromArgb(0x22, v, v, v);
+                Application.Current.Resources["BaseHigh"]   = Color.FromArgb(0xFF, f, f, f);
+                Application.Current.Resources["AltHigh"]    = Color.FromArgb(0x88, b, b, b);
+                Application.Current.Resources["AltMedHigh"] = Color.FromArgb(0x66, b, b, b);
+                Application.Current.Resources["AltMed"]     = Color.FromArgb(0x44, b, b, b);
+                Application.Current.Resources["AltMedLow"]  = Color.FromArgb(0x33, b, b, b);
+                Application.Current.Resources["AltLow"]     = Color.FromArgb(0x22, b, b, b);
             }
 
             public static Color ColorFromHex(string hex) =>
@@ -246,7 +279,7 @@ namespace SnakeGame.Windows
                 maxApples = Snakes.Count,
                 Apples = new List<Point>()
                 {
-                    new Point(w / 2, h / 2)
+                    new Point((w >> 1) + 2, (h >> 1) + (h & 1))
                 }
             };
 

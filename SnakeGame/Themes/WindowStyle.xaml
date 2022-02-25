@@ -53,14 +53,18 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Window">
-                    <Border>
-                        <Border
-                            x:Name="Container"
-                            Margin="6"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                            <Grid>
+                    <Grid>
+                        <Grid x:Name="Container" Margin="6">
+                            <Border
+                                x:Name="RoundBorder"
+                                Margin="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" />
+                            <Grid Margin="1">
+                                <Grid.OpacityMask>
+                                    <VisualBrush Visual="{Binding ElementName=RoundBorder}" />
+                                </Grid.OpacityMask>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="auto" />
                                     <RowDefinition />
@@ -134,8 +138,8 @@
                                 <Rectangle Grid.Row="1" Style="{StaticResource ShadeBox}" />
                                 <ContentPresenter Grid.Row="1" />
                             </Grid>
-                        </Border>
-                    </Border>
+                        </Grid>
+                    </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="ResizeMode" Value="CanMinimize">
                             <Setter TargetName="MinimizeButton" Property="Visibility" Value="Visible" />
@@ -146,7 +150,7 @@
                             <Setter TargetName="MaximizeButton" Property="Visibility" Value="Collapsed" />
                         </Trigger>
                         <Trigger Property="WindowState" Value="Maximized">
-                            <Setter TargetName="Container" Property="Margin" Value="-1" />
+                            <Setter TargetName="Container" Property="Margin" Value="-2" />
                         </Trigger>
                         <Trigger Property="WindowState" Value="Normal">
                             <Setter TargetName="Container" Property="Effect">
@@ -159,7 +163,7 @@
                                         Color="black" />
                                 </Setter.Value>
                             </Setter>
-                            <Setter TargetName="Container" Property="CornerRadius" Value="0,0,5,5" />
+                            <Setter TargetName="RoundBorder" Property="CornerRadius" Value="5" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

@@ -146,21 +146,56 @@
                 </Grid>
             </Viewbox>
             <Viewbox>
-                <Viewbox>
-                    <Viewbox.Effect>
-                        <DropShadowEffect
-                            BlurRadius="0"
-                            Direction="270"
-                            ShadowDepth="0.02" />
-                    </Viewbox.Effect>
-                    <Grid
-                        x:Name="MainFrame"
-                        Width="11"
-                        Height="11"
-                        ClipToBounds="True" />
+                <!--<Viewbox.Effect>
+                    <DropShadowEffect
+                        BlurRadius="2"
+                        Direction="270"
+                        ShadowDepth="2"
+                        Color="#2444" />
+                </Viewbox.Effect>-->
+                <Viewbox IsHitTestVisible="False">
+                    <Border Background="Transparent">
+                        <Grid
+                            x:Name="MainFrame"
+                            Width="11"
+                            Height="11"
+                            ClipToBounds="True" />
+                    </Border>
                 </Viewbox>
             </Viewbox>
         </Grid>
+        <!--<Border
+            Grid.Column="1"
+            Background="White"
+            Visibility="Collapsed">
+            <Viewbox>
+                <Viewbox.Effect>
+                    <local:ABlurEffect />
+                </Viewbox.Effect>
+                <StackPanel
+                    Width="3"
+                    Height="2"
+                    Background="Transparent"
+                    Orientation="Horizontal">
+                    <Ellipse
+                        Width="1"
+                        Height="1"
+                        Margin="0.5,0,0,0"
+                        HorizontalAlignment="Left"
+                        Fill="#F00" />
+                    <Ellipse
+                        Width="1"
+                        Height="1"
+                        Margin="-0.5"
+                        Fill="#0F0" />
+                    <Ellipse
+                        Width="1"
+                        Height="1"
+                        HorizontalAlignment="Right"
+                        Fill="#00F" />
+                </StackPanel>
+            </Viewbox>
+        </Border>-->
         <Rectangle Fill="{DynamicResource AltLowBrush}" Opacity="0.5" />
         <Label
             Margin="3,5"

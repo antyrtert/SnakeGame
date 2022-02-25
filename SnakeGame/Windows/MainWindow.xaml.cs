@@ -6,10 +6,12 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Vector = AMath.Vector;
+
 using static SnakeGame.Global;
+
 using FocusManager = System.Windows.Input.FocusManager;
 using Key = System.Windows.Input.Key;
+using Vector = AMath.Vector;
 
 namespace SnakeGame.Windows
 {
@@ -24,24 +26,26 @@ namespace SnakeGame.Windows
         {
             InitializeComponent();
 
-            Field = Clone<SnakeLogic.Field>(FieldPreset);
+            Field = FieldPreset.Clone();
             Field.Snakes[0].alive = false;
             MainFrame.Children.Add(Field.Draw());
 
             RedrawField += () =>
             {
+                MainFrame.Width = FieldPreset.Width;
+                MainFrame.Height = FieldPreset.Height;
                 MainFrame.Children.Insert(0, FieldPreset.Draw());
                 MainFrame.Children.RemoveAt(1);
             };
 
             Closed += (_, __) => updatetimer.Stop();
 
-            updatetimer.Elapsed += (_, __) => Dispatcher.BeginInvoke((Action)(() => Update()), null);
+            updatetimer.Elapsed += (_, __) => Dispatcher.BeginInvoke((Action)Update, null);
         }
 
         public void Start()
         {
-            Field = Clone<SnakeLogic.Field>(FieldPreset);
+            Field = FieldPreset.Clone();
             Field.GenFood();
 
             MainFrame.Width = Field.Width;
@@ -64,17 +68,23 @@ namespace SnakeGame.Windows
             TimeLabelSP.Children.Clear();
             ScoreLabelSP.Children.Clear();
 
-            foreach (SnakeLogic.Snake snake in Field.Snakes)
+            List<SnakeLogic.Snake> Snakes = Field.Snakes.ToArray().ToList();
+            Snakes.Sort((p, n) => p.score.CompareTo(n.score));
+            Snakes.Sort((p, n) => p.alive.CompareTo(n.alive));
+            Snakes.Reverse();
+
+            foreach (SnakeLogic.Snake snake in Snakes)
             {
-                SolidColorBrush background = snake.Brush;
-                SolidColorBrush foreground = ((AMath.Color)background.Color).L > 0.5 ?
-                    Brushes.Black : Brushes.White;
+                SolidColorBrush background = new(snake.Color);
+                SolidColorBrush foreground = Brushes.White;
+
+                background.Opacity = 0.5;
 
                 NameLabelSP.Children.Add(new Label()
                 {
                     Padding = new Thickness(5, 3, 5, 3),
                     Content = snake.Name ?? "Без имени",
-                    Opacity = snake.alive ? 1 : 0.25,
+                    Opacity = snake.alive ? 1 : 0.75,
                     Foreground = foreground,
                     Background = background
                 });
@@ -83,7 +93,7 @@ namespace SnakeGame.Windows
                 {
                     Padding = new Thickness(5, 3, 5, 3),
                     Content = snake.score,
-                    Opacity = snake.alive ? 1 : 0.25,
+                    Opacity = snake.alive ? 1 : 0.75,
                     Foreground = foreground,
                     Background = background
                 });
@@ -92,7 +102,7 @@ namespace SnakeGame.Windows
                 {
                     Padding = new Thickness(5, 3, 5, 3),
                     Content = snake.time,
-                    Opacity = snake.alive ? 1 : 0.25,
+                    Opacity = snake.alive ? 1 : 0.75,
                     Foreground = foreground,
                     Background = background
                 });
@@ -114,16 +124,12 @@ namespace SnakeGame.Windows
             {
                 updatetimer.Stop();
 
-                if (AskName()
-                    && Field.Width == 11 && Field.Height == 11
-                    && Field.Snakes.Count == 1 && Field.Snakes[id].bot == false
+                if (Field.Width == 11 && Field.Height == 11
+                    && Field.Snakes.Count == 1 && Field.Snakes[0].bot == false
                     && Field.maxApples == 1 && Field.speed == 5)
-                    SaveResult(new Item(username,
-                        $"{Field.Snakes[id].score}",
-                        Field.Snakes[id].time,
-                        $"{DateTime.Now}"));
+                    SaveResult(new Item(username, $"{Field.Snakes[id].score}", Field.Snakes[id].time, $"{DateTime.Now}"));
 
-                Window wnd = new Window()
+                Window wnd = new()
                 {
                     Owner = this,
                     ResizeMode = ResizeMode.NoResize,
@@ -134,17 +140,15 @@ namespace SnakeGame.Windows
                     Title = "Игра окончена"
                 };
 
-                wnd.PreviewKeyDown += (_, args) =>
+                wnd.PreviewKeyUp += (_, args) =>
                 {
                     if (args.Key == Key.Escape)
                         wnd.Close();
                 };
 
-                Button rbtn = new Button()
+                Button rbtn = new()
                 {
                     Content = "Начать заново",
-                    Foreground = Brushes.White,
-                    Margin = new Thickness(0, 3, 0, 0),
                     Focusable = true
                 };
 
@@ -154,7 +158,7 @@ namespace SnakeGame.Windows
                     wnd.Close();
                 };
 
-                StackPanel sp = new StackPanel
+                StackPanel sp = new()
                 {
                     Orientation = Orientation.Vertical,
                     Margin = new Thickness(15, 15, 15, 12),
@@ -187,81 +191,9 @@ namespace SnakeGame.Windows
 
         }
 
-        private bool AskName()
-        {
-            if (string.IsNullOrWhiteSpace(username))
-            {
-                Window window = new Window()
-                {
-                    Owner = this,
-                    ResizeMode = ResizeMode.NoResize,
-                    ShowInTaskbar = false,
-                    SizeToContent = SizeToContent.WidthAndHeight,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    Style = GetResource<Style>("WindowStyle"),
-                    Title = "Введите имя"
-                };
-
-                TextBox tb = new TextBox()
-                {
-                    MaxLength = 32,
-                    Background = GetResource<Brush>("AltMedBrush"),
-                    BorderThickness = new Thickness(0),
-                    Foreground = Brushes.White,
-                    MinWidth = 100,
-                    Padding = new Thickness(5),
-                    Text = username
-                };
-
-                tb.KeyDown += (_, e) =>
-                {
-                    if (e.Key == Key.Escape || e.Key == Key.Enter)
-                        window.Close();
-                };
-
-
-                Button rbtn = new Button() { Content = "ОК" };
-
-                rbtn.Click += (_, __) => window.Close();
-
-                window.Closing += (_, __) =>
-                {
-                    username = tb.Text;
-                    Field.Snakes[id].Name = username;
-                };
-
-                window.Content = new StackPanel()
-                {
-                    Margin = new Thickness(15),
-                    Children =
-                    {
-                        tb,
-                        new Rectangle()
-                        {
-                            Style = GetResource<Style>("ShadeBox"),
-                            Opacity = 0.75
-                        },
-                        rbtn,
-                        new Rectangle()
-                        {
-                            Style = GetResource<Style>("ShadeBox"),
-                            Opacity = 1
-                        }
-                    }
-                };
-
-                tb.SelectAll();
-                tb.Focus();
-                window.ShowDialog();
-
-                return !string.IsNullOrWhiteSpace(username);
-            }
-            return true;
-        }
-
         private void SaveResult(Item i)
         {
-            List<Item> Items = (List<Item>)Save.DeSerializeBin<Item>(Environment.CurrentDirectory + "\\Data\\Scores.bin");
+            List<Item> Items = Save.DeSerializeBin<Item>(Environment.CurrentDirectory + "\\Data\\Scores.bin");
 
             Items.Add(i);
             Items.Sort();
@@ -321,7 +253,5 @@ namespace SnakeGame.Windows
             FocusManager.SetFocusedElement(FocusManager.GetFocusScope(this), this);
             this.Focus();
         }
-
-
     }
 }

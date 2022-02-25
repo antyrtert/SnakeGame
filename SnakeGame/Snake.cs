@@ -12,9 +12,13 @@ using AMath;
 using Point = AMath.Point;
 using Vector = AMath.Vector;
 using static SnakeGame.Global;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 
 namespace SnakeGame.SnakeLogic
 {
+    [Serializable]
     public class Field
     {
         public int Width, Height;
@@ -105,40 +109,52 @@ namespace SnakeGame.SnakeLogic
             if (DebugOverlay && Debug != null)
             {
                 GC.Collect();
-                int x = 0, y = 0;
-                foreach (int? i in Debug)
-                {
-                    grid.Children.Add(new Border()
+                Brush Background = GetResource<Brush>("AltLowBrush"),
+                      Foreground = GetResource<Brush>("BaseHighBrush");
+                for (int x = 0; x < Width; x++)
+                    for (int y = 0; y < Height; y++)
                     {
-                        Width = 0.6,
-                        Height = 0.6,
-                        CornerRadius = new CornerRadius(1),
-                        Background = GetResource<Brush>("AltLowBrush"),
-                        Margin = new Thickness(x + 0.2, y + 0.2, 0, 0),
-                        HorizontalAlignment = HorizontalAlignment.Left,
-                        VerticalAlignment = VerticalAlignment.Top,
-                        Child =
-                        new TextBlock()
-                        {
-                            VerticalAlignment = VerticalAlignment.Center,
-                            HorizontalAlignment = HorizontalAlignment.Center,
-                            FontSize = 0.35,
-                            Text = i == int.MaxValue ? "#" : $"{i}",
-                            Foreground = GetResource<Brush>("BaseHighBrush"),
-                        }
-                    });
-                    if (++x >= Width)
-                    {
-                        x = 0;
-                        y++;
+                        int? i = Debug[y * Width + x];
+
+                        if (i.HasValue && i.Value != int.MaxValue)
+                            grid.Children.Add(new Border()
+                            {
+                                Width = 0.6,
+                                Height = 0.6,
+                                CornerRadius = new CornerRadius(1),
+                                Background = Background,
+                                Margin = new Thickness(x + 0.2, y + 0.2, 0, 0),
+                                HorizontalAlignment = HorizontalAlignment.Left,
+                                VerticalAlignment = VerticalAlignment.Top,
+                                Child =
+                                new TextBlock()
+                                {
+                                    VerticalAlignment = VerticalAlignment.Center,
+                                    HorizontalAlignment = HorizontalAlignment.Center,
+                                    FontSize = 0.35,
+                                    Text = i.ToString(),
+                                    Foreground = Foreground,
+                                }
+                            });
                     }
-                }
             }
 
             return grid;
         }
+
+        public Field Clone()
+        {
+            using var ms = new MemoryStream();
+            var formatter = new BinaryFormatter();
+
+            formatter.Serialize(ms, this);
+            ms.Position = 0;
+
+            return (Field)formatter.Deserialize(ms);
+        }
     }
 
+    [Serializable]
     public class Snake
     {
         private string name;
@@ -153,7 +169,8 @@ namespace SnakeGame.SnakeLogic
             { get => new SolidColorBrush(Color);
               set => Color = value.Color; }
         public SolidColorBrush TailBrush => new SolidColorBrush(Color);
-        public SolidColorBrush HeadBrush => new SolidColorBrush(Color.FromHSV(Color.H, Color.S * 0.5, Color.V, Color.A));
+        public SolidColorBrush HeadBrush => new SolidColorBrush(Color.FromHSV(
+            Color.H, Color.S * 0.5, Color.V + 0.2, Color.A));
 
         public int id, score = 0;
         public string time = "00:00";
@@ -199,41 +216,35 @@ namespace SnakeGame.SnakeLogic
                 {
                     if (snake.TailPoints.Count > 0)
                         Path[snake.HeadPos.Y * width + snake.HeadPos.X] = int.MaxValue;
-                    foreach (Point p in snake.TailPoints)
-                        Path[p.Y * width + p.X] = int.MaxValue;
+                    //foreach (Point p in snake.TailPoints)
+                    Parallel.ForEach(snake.TailPoints, p =>
+                        Path[p.Y * width + p.X] = int.MaxValue);
                 }
 
-                for (int i = 0; i < width * height; i++)
-                    for (int j = 0; j < width * height; j++)
+                for (int i = 0; i < width * height && Path.Contains(null); i++)
+                    //for (int j = 0; j < width * height; j++)
+                    Parallel.For(0, width * height, j =>
+                    {
                         if (Path[j] == i)
                         {
-                            if (j > width)
-                                Path[j - width] ??= i + 1;
-
-                            if (j % width > 0)
-                                Path[j - 1] ??= i + 1;
-
-                            if (j < width * (height - 1))
-                                Path[j + width] ??= i + 1;
-
-                            if (j % width < width - 1)
-                                Path[j + 1] ??= i + 1;
+                            if (j > width) Path[j - width] ??= i + 1;
+                            if (j % width > 0) Path[j - 1] ??= i + 1;
+                            if (j < width * (height - 1)) Path[j + width] ??= i + 1;
+                            if (j % width < width - 1) Path[j + 1] ??= i + 1;
                         }
+                    });
 
-                if (DebugOverlay)
-                    field.Debug = Path;
+                if (DebugOverlay) field.Debug = Path;
 
-                if (HeadPos.Y > 0)
-                    up = Path[HeadPos.Y * width + HeadPos.X - width] ?? int.MaxValue >> 1;
-                if (HeadPos.X > 0)
-                    left = Path[HeadPos.Y * width + HeadPos.X - 1] ?? int.MaxValue >> 1;
-                if (HeadPos.Y < height - 1)
-                    down = Path[HeadPos.Y * width + HeadPos.X + width] ?? int.MaxValue >> 1;
-                if (HeadPos.X < width - 1)
-                    right = Path[HeadPos.Y * width + HeadPos.X + 1] ?? int.MaxValue >> 1;
+                if (HeadPos.Y > 0) up = Path[HeadPos.Y * width + HeadPos.X - width] ?? int.MaxValue >> 1;
+                if (HeadPos.X > 0) left = Path[HeadPos.Y * width + HeadPos.X - 1] ?? int.MaxValue >> 1;
+                if (HeadPos.Y < height - 1) down = Path[HeadPos.Y * width + HeadPos.X + width] ?? int.MaxValue >> 1;
+                if (HeadPos.X < width - 1) right = Path[HeadPos.Y * width + HeadPos.X + 1] ?? int.MaxValue >> 1;
 
                 int min = new int[4] { up, left, down, right }.Min();
+                int max = new int[4] { up, left, down, right }.Max();
 
+                if (min == max) return HeadDirection;
                 if (up == min) return Vector.Up;
                 if (left == min) return Vector.Left;
                 if (down == min) return Vector.Down;
@@ -276,9 +287,9 @@ namespace SnakeGame.SnakeLogic
             }
         }
 
-        public Grid Render(Field field)
+        public Canvas Render(Field field)
         {
-            Grid grid = new Grid() { Width = field.Width, Height = field.Height };
+            Canvas canvas = new Canvas() { Width = field.Width, Height = field.Height };
 
             Polyline polyline = new Polyline()
             {
@@ -296,18 +307,17 @@ namespace SnakeGame.SnakeLogic
 
                 if (d != v)
                     polyline.Points.Add(new System.Windows.Point(
-                            TailPoints[i].X + 0.5,
-                            TailPoints[i].Y + 0.5));
+                        TailPoints[i].X + 0.5,
+                        TailPoints[i].Y + 0.5));
 
                 v = d;
             }
 
-
             if (TailPoints.Count > 1)
             {
                 polyline.Points.Add(new System.Windows.Point(
-                            TailPoints[^2].X + 0.5,
-                            TailPoints[^2].Y + 0.5));
+                    TailPoints[^2].X + 0.5,
+                    TailPoints[^2].Y + 0.5));
 
                 Line end = new Line()
                 {
@@ -327,7 +337,7 @@ namespace SnakeGame.SnakeLogic
                 end.BeginAnimation(Line.Y1Property,
                     new DoubleAnimation(end.Y1, end.Y2, GetrefreshTimeSpan()));
 
-                grid.Children.Add(end);
+                canvas.Children.Add(end);
             }
             else if (TailPoints.Count > 0)
             {
@@ -355,7 +365,7 @@ namespace SnakeGame.SnakeLogic
                 end.BeginAnimation(Line.Y1Property,
                     new DoubleAnimation(end.Y1, end.Y2, GetrefreshTimeSpan()));
 
-                grid.Children.Add(end);
+                canvas.Children.Add(end);
             }
 
             SolidColorBrush headBrush = HeadBrush;
@@ -392,7 +402,7 @@ namespace SnakeGame.SnakeLogic
                 start.BeginAnimation(Line.Y1Property,
                     new DoubleAnimation(start.Y2, HeadPos.Y + 0.5, GetrefreshTimeSpan()));
 
-                grid.Children.Add(start);
+                canvas.Children.Add(start);
 
                 headEllipse.BeginAnimation(FrameworkElement.MarginProperty,
                     new ThicknessAnimation(new Thickness(HeadPos.X + 0.05, HeadPos.Y + 0.05, 0, 0),
@@ -405,11 +415,13 @@ namespace SnakeGame.SnakeLogic
                 headEllipse.Margin = new Thickness(HeadPos.X + 0.05, HeadPos.Y + 0.05, 0, 0);
             }
 
-            grid.Children.Add(polyline);
-            grid.Children.Add(headEllipse);
+            canvas.Children.Add(polyline);
+            canvas.Children.Add(headEllipse);
 
-            return grid;
+            return canvas;
         }
+
+        public Snake Clone() => (Snake)MemberwiseClone();
     }
 }
 

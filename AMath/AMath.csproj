@@ -1,8 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+	<Platforms>AnyCPU;x86</Platforms>
+	<PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 
 </Project>

@@ -15,12 +15,12 @@
     mc:Ignorable="d">
     <Window.Resources>
         <Color x:Key="PreviewColor">#000000</Color>
-        <SolidColorBrush x:Key="PreviewBrush" Color="{DynamicResource PreviewColor}" />
         <Color x:Key="PreviewColorHue">#FF0000</Color>
-        <SolidColorBrush x:Key="PreviewBrushHue" Color="{DynamicResource PreviewColorHue}" />
         <Color x:Key="PreviewColorSat">#FFFFFF</Color>
-        <SolidColorBrush x:Key="PreviewBrushSat" Color="{DynamicResource PreviewColorSat}" />
         <Color x:Key="PreviewColorVal">#000000</Color>
+        <SolidColorBrush x:Key="PreviewBrush" Color="{DynamicResource PreviewColor}" />
+        <SolidColorBrush x:Key="PreviewBrushHue" Color="{DynamicResource PreviewColorHue}" />
+        <SolidColorBrush x:Key="PreviewBrushSat" Color="{DynamicResource PreviewColorSat}" />
         <SolidColorBrush x:Key="PreviewBrushVal" Color="{DynamicResource PreviewColorVal}" />
     </Window.Resources>
     <Grid SnapsToDevicePixels="True" UseLayoutRounding="True">
@@ -28,7 +28,18 @@
             <RowDefinition Height="75" />
             <RowDefinition Height="4*" />
         </Grid.RowDefinitions>
-        <Border Margin="10" Background="{StaticResource PreviewBrush}" />
+        <Border
+            Margin="10"
+            Background="{StaticResource PreviewBrush}"
+            CornerRadius="5">
+            <Border.Effect>
+                <DropShadowEffect
+                    BlurRadius="3"
+                    Direction="270"
+                    Opacity="0.5"
+                    ShadowDepth="2" />
+            </Border.Effect>
+        </Border>
         <TextBox
             x:Name="HexTB"
             Margin="10"
@@ -43,10 +54,6 @@
                 <SolidColorBrush Color="{DynamicResource BaseHigh}" />
             </TextBox.Foreground>
         </TextBox>
-        <Rectangle
-            Margin="10,5"
-            VerticalAlignment="Bottom"
-            Style="{StaticResource ShadeBox}" />
         <StackPanel
             Grid.Row="1"
             ClipToBounds="False"
@@ -83,6 +90,8 @@
                     HorizontalAlignment="Left"
                     Fill="{StaticResource PreviewBrushHue}"
                     IsHitTestVisible="False"
+                    RadiusX="1"
+                    RadiusY="1"
                     Stroke="{StaticResource BaseHighBrush}"
                     StrokeThickness="1" />
             </Grid>
@@ -113,6 +122,8 @@
                     HorizontalAlignment="Left"
                     Fill="{StaticResource PreviewBrushSat}"
                     IsHitTestVisible="False"
+                    RadiusX="1"
+                    RadiusY="1"
                     Stroke="{StaticResource BaseHighBrush}"
                     StrokeThickness="1" />
             </Grid>
@@ -143,6 +154,8 @@
                     HorizontalAlignment="Left"
                     Fill="{StaticResource PreviewBrushVal}"
                     IsHitTestVisible="False"
+                    RadiusX="1"
+                    RadiusY="1"
                     Stroke="{StaticResource BaseHighBrush}"
                     StrokeThickness="1" />
             </Grid>
